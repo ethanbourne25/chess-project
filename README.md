@@ -1,6 +1,7 @@
 # chess-project by Ethan Bourne
 
 Running:
+Make sure python and pygame is installed
 From the terminal within the project folder run: "python chess.py"
 
 Description:
