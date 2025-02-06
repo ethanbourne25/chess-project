@@ -90,7 +90,6 @@ def setupBoard():
 
 def placePieces():
     for i in range(len(blackPieceList)):
-        print("Black piece with id = ", blackPieceList[i], "with location = ", blackPieceLocations[i])
         if blackPieceList[i] == " pawn":
             print("Y")
         elif blackPieceList[i] == "pawn":
@@ -134,8 +133,12 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-    
-    
+        
+        if event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            clickedPiece = [i for i in whitePieceList if i.rect.collidepoint(pos)]
+            print(clickedPiece)
+
     # Start the game
     
 
