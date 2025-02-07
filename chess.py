@@ -1,11 +1,12 @@
 import pygame
 from sys import exit
 
+# Setup screen
 pygame.init()
 screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Chess')
 
-#Squares
+#Setup Squares
 squareSize = 75
 l = pygame.Surface((75, 75))
 l.fill('burlywood1')
@@ -13,13 +14,7 @@ l.fill('burlywood1')
 d = pygame.Surface((75, 75))
 d.fill('chocolate4')
 
-#White Pieces
-whitePieces = ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn",
-                "rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
-whiteStartingSquares = [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7],
-                        [0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7]]
-whiteCaptured = []
-
+# Setup images for every piece
 whitePawn = pygame.image.load('./pieces/pawn_white.png').convert_alpha()
 whitePawn = pygame.transform.scale(whitePawn, (75, 75))
 
@@ -37,13 +32,6 @@ whiteQueen = pygame.transform.scale(whiteQueen, (75, 75))
 
 whiteKing = pygame.image.load('./pieces/king_white.png').convert_alpha()
 whiteKing = pygame.transform.scale(whiteKing, (75, 75))
-
-#Black Pieces
-blackPieces = ["pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn",
-                "rook", "knight", "bishop", "queen", "king", "bishop", "knight", "rook"]
-blackStartingSquares = [[6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [6, 7],
-                        [7, 0], [7, 1], [7, 2], [7, 3], [7, 4], [7, 5], [7, 6], [7, 7]]
-blackCaptured = []
 
 blackPawn = pygame.image.load('pieces/pawn_black.png').convert_alpha()
 blackPawn = pygame.transform.scale(blackPawn, (75, 75))
@@ -63,16 +51,33 @@ blackQueen = pygame.transform.scale(blackQueen, (75, 75))
 blackKing = pygame.image.load('pieces/king_black.png').convert_alpha()
 blackKing = pygame.transform.scale(blackKing, (75, 75))
 
-turnNumber = 0
+#setup initial board with default starting positon
+startingBoard = []
+startingBoard.append("r")
+startingBoard.append("n")
+startingBoard.append("b")
+startingBoard.append("q")
+startingBoard.append("k")
+startingBoard.append("b")
+startingBoard.append("n")
+startingBoard.append("r")
+for i in range(8):
+    startingBoard.append("p")
+for i in range(32):
+    startingBoard.append(None)
+for i in range(8):
+    startingBoard.append("P")
+startingBoard.append("R")
+startingBoard.append("N")
+startingBoard.append("B")
+startingBoard.append("Q")
+startingBoard.append("K")
+startingBoard.append("B")
+startingBoard.append("N")
+startingBoard.append("R")
 
-blackPieceList = blackPieces
-blackPieceLocations = blackStartingSquares
-
-whitePieceList = whitePieces
-whitePieceLocations = whiteStartingSquares
-
+# Draw the board and place pieces in initial position
 def setupBoard():
-    # Draw the board
     for i in range(8):
         for j in range(8):
             if i % 2 == 0:
@@ -86,48 +91,57 @@ def setupBoard():
                 else:
                     screen.blit(l, (i * 75, j * 75))
     # Place the pieces
-    placePieces()
+    placePieces(startingBoard)
 
-def placePieces():
-    for i in range(len(blackPieceList)):
-        if blackPieceList[i] == " pawn":
-            print("Y")
-        elif blackPieceList[i] == "pawn":
-            screen.blit(blackPawn, (blackPieceLocations[i][1] * squareSize, (7 - blackPieceLocations[i][0]) * squareSize))
-        elif blackPieceList[i] == "bishop":
-            screen.blit(blackBishop, (blackPieceLocations[i][1] * squareSize, (7 - blackPieceLocations[i][0]) * squareSize))
-        elif blackPieceList[i] == "rook":
-            screen.blit(blackRook, (blackPieceLocations[i][1] * squareSize, (7 - blackPieceLocations[i][0]) * squareSize))
-        elif blackPieceList[i] == "knight":
-            screen.blit(blackKnight, (blackPieceLocations[i][1] * squareSize, (7 - blackPieceLocations[i][0]) * squareSize))
-        elif blackPieceList[i] == "queen":
-            screen.blit(blackQueen, (blackPieceLocations[i][1] * squareSize, (7 - blackPieceLocations[i][0]) * squareSize))
-        elif blackPieceList[i] == "king":
-            screen.blit(blackKing, (blackPieceLocations[i][1] * squareSize, (7 - blackPieceLocations[i][0]) * squareSize))
+# Place the pieces for any position using list representation of the position, b
+def placePieces(b):
+    x = 0
+    y = 7
+    for i in range(len(b)):
+        # Find and draw piece
+        #print("For i = ", i, ", b[i] = ", b[i], ", x = ", x, ", y = ", y)
+        if b[i] == "p":
+            screen.blit(blackPawn, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "P":
+            screen.blit(whitePawn, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "n":
+            screen.blit(blackKnight, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "N":
+            screen.blit(whiteKnight, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "b":
+            screen.blit(blackBishop, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "B":
+            screen.blit(whiteBishop, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "r":
+            screen.blit(blackRook, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "R":
+            screen.blit(whiteRook, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "q":
+            screen.blit(blackQueen, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "Q":
+            screen.blit(whiteQueen, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "k":
+            screen.blit(blackKing, (x * squareSize, (7 - y) * squareSize))
+        elif b[i] == "K":
+            screen.blit(whiteKing, (x * squareSize, (7 - y) * squareSize))
+        # Update coordinates
+        if x < 7:
+            x += 1
         else:
-            raise TypeError("Invalid piece")
-    for i in range(len(whitePieceList)):
-        if whitePieceList[i] == "pawn":
-            screen.blit(whitePawn, (whitePieceLocations[i][1] * squareSize, (7 - whitePieceLocations[i][0]) * squareSize))
-        elif whitePieceList[i] == "bishop":
-            screen.blit(whiteBishop, (whitePieceLocations[i][1] * squareSize, (7 - whitePieceLocations[i][0]) * squareSize))
-        elif whitePieceList[i] == "rook":
-            screen.blit(whiteRook, (whitePieceLocations[i][1] * squareSize, (7 - whitePieceLocations[i][0]) * squareSize))
-        elif whitePieceList[i] == "knight":
-            screen.blit(whiteKnight, (whitePieceLocations[i][1] * squareSize, (7 - whitePieceLocations[i][0]) * squareSize))
-        elif whitePieceList[i] == "queen":
-            screen.blit(whiteQueen, (whitePieceLocations[i][1] * squareSize, (7 - whitePieceLocations[i][0]) * squareSize))
-        elif whitePieceList[i] == "king":
-            screen.blit(whiteKing, (whitePieceLocations[i][1] * squareSize, (7 - whitePieceLocations[i][0]) * squareSize))
-        else:
-            raise TypeError("Invalid piece")
+            x = 0
+            y += -1
+
         
     
-
+# Set up variables for game
+board = startingBoard
 run = True
 whiteTurn = True
+turnNumber = 0
 gameRun = True
 setupBoard()
+
+#Main loop for running game
 while run:
     # Running logic
     for event in pygame.event.get():
@@ -136,7 +150,7 @@ while run:
         
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
-            clickedPiece = [i for i in whitePieceList if i.rect.collidepoint(pos)]
+            clickedPiece = [i for i in board if i.rect.collidepoint(pos)]
             print(clickedPiece)
 
     # Start the game
