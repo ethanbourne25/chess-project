@@ -1,12 +1,13 @@
 import pygame
 from sys import exit
+from pieces import Piece, Pawn, Rook, Knight, Bishop, Queen, King
 
 # Setup screen
 pygame.init()
 screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Chess')
 
-#Setup Squares
+# Setup Squares
 squareSize = 75
 l = pygame.Surface((75, 75))
 l.fill('burlywood1')
@@ -76,8 +77,8 @@ startingBoard.append("B")
 startingBoard.append("N")
 startingBoard.append("R")
 
-# Draw the board and place pieces in initial position
-def setupBoard():
+# Draw the board and place pieces from board b
+def drawBoard(b):
     for i in range(8):
         for j in range(8):
             if i % 2 == 0:
@@ -90,8 +91,9 @@ def setupBoard():
                     screen.blit(d, (i * 75, j * 75))
                 else:
                     screen.blit(l, (i * 75, j * 75))
+
     # Place the pieces
-    placePieces(startingBoard)
+    placePieces(b)
 
 # Place the pieces for any position using list representation of the position, b
 def placePieces(b):
@@ -131,6 +133,15 @@ def placePieces(b):
             x = 0
             y += -1
 
+# Return the square number by receiving input coordinates
+def getSquare(coordinates):
+    # Divide each coordinate by square size in order to get corresponding square row and column
+    x = coordinates[0] // squareSize
+    y = coordinates[1] // squareSize
+    #print("X = ", x, ", y = ", y)
+    # Convert the square row and column to location in array
+    return (y * 8) + x
+
         
     
 # Set up variables for game
@@ -138,20 +149,28 @@ board = startingBoard
 run = True
 whiteTurn = True
 turnNumber = 0
-gameRun = True
-setupBoard()
+#gameRun = True
+selected = None
 
 #Main loop for running game
 while run:
+    drawBoard(board)
     # Running logic
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        
-        if event.type == pygame.MOUSEBUTTONUP:
+        elif event.type == pygame.MOUSEBUTTONUP:
+            # Get the position of mouse and convert it to a square
             pos = pygame.mouse.get_pos()
-            clickedPiece = [i for i in board if i.rect.collidepoint(pos)]
-            print(clickedPiece)
+            square = getSquare(pos)
+            if selected is None and board[square] is not None:
+                selected = square
+            else:
+                temp = board[selected]
+                board[selected] = None
+                board[square] = temp
+                selected = None
+            #print("At square ", square, " is the following piece:", board[square])
 
     # Start the game
     
