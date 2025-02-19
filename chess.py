@@ -2,26 +2,54 @@ import pygame
 from sys import exit
 from pieces import Piece, Pawn, Rook, Knight, Bishop, Queen, King
 
+# Sizes
+squareSize = 75
+borderSize = squareSize // 12
+
 # Setup screen
 pygame.init()
-screen = pygame.display.set_mode((900, 600))
+screen = pygame.display.set_mode((squareSize * 12, squareSize * 8))
 pygame.display.set_caption('Chess')
 
 # Setup Squares
-squareSize = 75
 l = pygame.Surface((squareSize, squareSize))
 l.fill('burlywood1')
 
 d = pygame.Surface((squareSize, squareSize))
 d.fill('chocolate4')
 
-# This is the border for a selected square, must set up horizontal and vertical
-borderSize = squareSize // 12
+# Setup border, need a row and a column
+
 border1 = pygame.Surface((squareSize, borderSize))
 border1.fill('darkgoldenrod1')
 border2 = pygame.Surface((borderSize, squareSize))
 border2.fill('darkgoldenrod1')
 
+# Setup turn display
+white = (255, 255, 255)
+black = (0, 0, 0)
+
+font = pygame.font.SysFont('timesnewroman',  30)
+# create a text surface object,
+# on which text is drawn on it.
+textWhite = font.render('White Turn', True, white, black)
+boxWhite = pygame.Surface((squareSize * 4, squareSize * 4))
+boxWhite.fill('black')
+
+textBlack = font.render('Black Turn', True, black, white)
+boxBlack = pygame.Surface((squareSize * 4, squareSize * 4))
+boxBlack.fill('white')
+
+textRectWhite = textWhite.get_rect()
+textRectWhite.center = (squareSize * 10, squareSize * 2)
+textRectBlack = textWhite.get_rect()
+textRectBlack.center = (squareSize * 10, squareSize * 2)
+
+
+
+
+
+# Setup turn Number display
 
 # Setup images for every piece
 whitePawn = pygame.image.load('./pieces/pawn_white.png').convert_alpha()
@@ -87,8 +115,9 @@ startingBoard.append("R")
 
 # Draw the board and place pieces from board b
 # Highlight selected square s
+# wt is boolean, if true is white's turn
 # Future: show possible squares to move with selected piece
-def drawBoard(b, s):
+def drawBoard(b, s, wt):
     # Draw the squares
     for i in range(8):
         for j in range(8):
@@ -126,6 +155,14 @@ def drawBoard(b, s):
         # Draw other half
         screen.blit(border1, (squareX, squareY2))
         screen.blit(border2, (squareX2, squareY))
+    # Display turn
+    if wt:
+        screen.blit(boxWhite, (squareSize * 8, 0))
+        screen.blit(textWhite, textRectWhite)
+    else:
+        screen.blit(boxBlack, (squareSize * 8, 0))
+        screen.blit(textBlack, textRectBlack)
+    # Display turn number
         
 
 
@@ -172,7 +209,7 @@ def getSquare(coordinates):
     # Divide each coordinate by square size in order to get corresponding square row and column
     x = coordinates[0] // squareSize
     y = coordinates[1] // squareSize
-    print("X = ", x, ", y = ", y)
+    #print("X = ", x, ", y = ", y)
     # Convert the square row and column to location in array
     return (y * 8) + x
 
@@ -181,14 +218,14 @@ def getSquare(coordinates):
 # Set up variables for game
 board = startingBoard
 run = True
-whiteTurn = True
+whiteTurn = False
 turnNumber = 0
 #gameRun = True
 selected = None
 
 #Main loop for running game
 while run:
-    drawBoard(board, selected)
+    drawBoard(board, selected, whiteTurn)
     # Running logic
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
