@@ -9,48 +9,56 @@ pygame.display.set_caption('Chess')
 
 # Setup Squares
 squareSize = 75
-l = pygame.Surface((75, 75))
+l = pygame.Surface((squareSize, squareSize))
 l.fill('burlywood1')
 
-d = pygame.Surface((75, 75))
+d = pygame.Surface((squareSize, squareSize))
 d.fill('chocolate4')
+
+# This is the border for a selected square, must set up horizontal and vertical
+borderSize = squareSize // 12
+border1 = pygame.Surface((squareSize, borderSize))
+border1.fill('darkgoldenrod1')
+border2 = pygame.Surface((borderSize, squareSize))
+border2.fill('darkgoldenrod1')
+
 
 # Setup images for every piece
 whitePawn = pygame.image.load('./pieces/pawn_white.png').convert_alpha()
-whitePawn = pygame.transform.scale(whitePawn, (75, 75))
+whitePawn = pygame.transform.scale(whitePawn, (squareSize, squareSize))
 
 whiteRook = pygame.image.load('./pieces/rook_white.png').convert_alpha()
-whiteRook = pygame.transform.scale(whiteRook, (75, 75))
+whiteRook = pygame.transform.scale(whiteRook, (squareSize, squareSize))
 
 whiteBishop = pygame.image.load('./pieces/bishop_white.png').convert_alpha()
-whiteBishop = pygame.transform.scale(whiteBishop, (75, 75))
+whiteBishop = pygame.transform.scale(whiteBishop, (squareSize, squareSize))
 
 whiteKnight = pygame.image.load('./pieces/knight_white.png').convert_alpha()
-whiteKnight = pygame.transform.scale(whiteKnight, (75, 75))
+whiteKnight = pygame.transform.scale(whiteKnight, (squareSize, squareSize))
 
 whiteQueen = pygame.image.load('./pieces/queen_white.png').convert_alpha()
-whiteQueen = pygame.transform.scale(whiteQueen, (75, 75))
+whiteQueen = pygame.transform.scale(whiteQueen, (squareSize, squareSize))
 
 whiteKing = pygame.image.load('./pieces/king_white.png').convert_alpha()
-whiteKing = pygame.transform.scale(whiteKing, (75, 75))
+whiteKing = pygame.transform.scale(whiteKing, (squareSize, squareSize))
 
 blackPawn = pygame.image.load('pieces/pawn_black.png').convert_alpha()
-blackPawn = pygame.transform.scale(blackPawn, (75, 75))
+blackPawn = pygame.transform.scale(blackPawn, (squareSize, squareSize))
 
 blackRook = pygame.image.load('pieces/rook_black.png').convert_alpha()
-blackRook = pygame.transform.scale(blackRook, (75, 75))
+blackRook = pygame.transform.scale(blackRook, (squareSize, squareSize))
 
 blackBishop = pygame.image.load('pieces/bishop_black.png').convert_alpha()
-blackBishop = pygame.transform.scale(blackBishop, (75, 75))
+blackBishop = pygame.transform.scale(blackBishop, (squareSize, squareSize))
 
 blackKnight = pygame.image.load('pieces/knight_black.png').convert_alpha()
-blackKnight = pygame.transform.scale(blackKnight, (75, 75))
+blackKnight = pygame.transform.scale(blackKnight, (squareSize, squareSize))
 
 blackQueen = pygame.image.load('pieces/queen_black.png').convert_alpha()
-blackQueen = pygame.transform.scale(blackQueen, (75, 75))
+blackQueen = pygame.transform.scale(blackQueen, (squareSize, squareSize))
 
 blackKing = pygame.image.load('pieces/king_black.png').convert_alpha()
-blackKing = pygame.transform.scale(blackKing, (75, 75))
+blackKing = pygame.transform.scale(blackKing, (squareSize, squareSize))
 
 #setup initial board with default starting positon
 startingBoard = []
@@ -78,22 +86,48 @@ startingBoard.append("N")
 startingBoard.append("R")
 
 # Draw the board and place pieces from board b
-def drawBoard(b):
+# Highlight selected square s
+# Future: show possible squares to move with selected piece
+def drawBoard(b, s):
+    # Draw the squares
     for i in range(8):
         for j in range(8):
             if i % 2 == 0:
                 if j % 2 == 0: 
-                    screen.blit(l, (i * 75, j * 75))
+                    screen.blit(l, (i * squareSize, j * squareSize))
                 else:
-                    screen.blit(d, (i * 75, j * 75))
+                    screen.blit(d, (i * squareSize, j * squareSize))
             else:
                 if j % 2 == 0: 
-                    screen.blit(d, (i * 75, j * 75))
+                    screen.blit(d, (i * squareSize, j * squareSize))
                 else:
-                    screen.blit(l, (i * 75, j * 75))
-
+                    screen.blit(l, (i * squareSize, j * squareSize))
     # Place the pieces
     placePieces(b)
+    # Highlight selected square
+    # Convert square number to row and column
+    if s is not None:
+
+        #print("Selected square number is ", s)
+        x = s % 8
+        y = s // 8
+        #print("x is ", x, ", y is ", y)
+
+        # Now take row and column to get to upper left corner of square
+        squareX = x * squareSize
+        squareY = y * squareSize
+        # Draw half of border
+        screen.blit(border1, (squareX, squareY))
+        screen.blit(border2, (squareX, squareY))
+        # Now need to change y for bottom row of border
+        squareY2 = squareY + squareSize - borderSize
+        # Need to change x for right column of border
+        squareX2 = squareX + squareSize - borderSize
+        # Draw other half
+        screen.blit(border1, (squareX, squareY2))
+        screen.blit(border2, (squareX2, squareY))
+        
+
 
 # Place the pieces for any position using list representation of the position, b
 def placePieces(b):
@@ -138,7 +172,7 @@ def getSquare(coordinates):
     # Divide each coordinate by square size in order to get corresponding square row and column
     x = coordinates[0] // squareSize
     y = coordinates[1] // squareSize
-    #print("X = ", x, ", y = ", y)
+    print("X = ", x, ", y = ", y)
     # Convert the square row and column to location in array
     return (y * 8) + x
 
@@ -154,7 +188,7 @@ selected = None
 
 #Main loop for running game
 while run:
-    drawBoard(board)
+    drawBoard(board, selected)
     # Running logic
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -165,7 +199,7 @@ while run:
             square = getSquare(pos)
             if selected is None and board[square] is not None:
                 selected = square
-            else:
+            elif selected is not None:
                 temp = board[selected]
                 board[selected] = None
                 board[square] = temp
