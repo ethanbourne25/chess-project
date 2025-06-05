@@ -1,11 +1,53 @@
+# Return 0 if place is empty, 1 if piece is white, and -1 if the piece is black
+def getColor(piece):
+    #print(piece)
+    if piece is None:
+        return 0
+    elif piece == "P" or piece == "N" or piece == "B" or piece == "R" or piece == "Q" or piece == "K":
+        return 1
+    
+    return -1
+
 # get legal moves for selected piece s on the board b
 def getLegalMoves(b, s):
     l = []
-
+    # white pawn
     if b[s] == 'P':
         l = pawn(b, s, True)
+    # black pawn
     elif b[s] == 'p':
         l = pawn(b, s, False)
+    # white knight
+    if b[s] == 'N':
+        l = knight(b, s, True)
+    # black knight
+    elif b[s] == 'n':
+        l = knight(b, s, False)
+    # white bishop
+    if b[s] == 'B':
+        l = bishop(b, s, True)
+    # black bishop
+    elif b[s] == 'b':
+        l = bishop(b, s, False)
+    # white rook
+    if b[s] == 'R':
+        l = rook(b, s, True)
+    # black rook
+    elif b[s] == 'r':
+        l = rook(b, s , False)
+    # white queen
+    if b[s] == 'Q':
+        l = queen(b, s, True)
+    # black queen
+    elif b[s] == 'q':
+        l = queen(b, s, False)
+    # white king
+    if b[s] == 'K':
+        l = king(b, s, True)
+    # black king
+    elif b[s] == 'k':
+        l = king(b, s, False)
+
 
     return l
 
@@ -20,22 +62,118 @@ def pawn(b, s , wt):
 
     return l
 
-def knight():
-    
-    return None
+def knight(b, s , wt):
 
-def bishop():
+    l = []
     
-    return None
+    # for knight need to check 8 locations to see if they are on the board and that a friendly piece is not there
+    # for up and down just need to check bounds of s ( 0 <= s <= 63)
+    # for left and right get the x coordinate of s and make sure it can move left or right the proper amount
+    x = s % 8
+    # finally if on board then check that there is not a piece of the same color on that square
+    # location 1 (up 2, left 1)     s - 17
+    if (s - 17) >= 0 and x > 0:
+        if b[s - 17] is None:
+            l.append(s - 17)
+        elif getColor(b[s - 17]) < 0 and wt:
+            l.append(s - 17)
+        elif getColor(b[s - 17]) > 0 and not wt:
+            l.append(s - 17)
+    # location 2 (up 2, right 1)    s - 15
+    if (s - 15) >= 0 and x < 7:
+        if b[s - 15] is None:
+            l.append(s - 15)
+        elif getColor(b[s - 15]) < 0 and wt:
+            l.append(s - 15)
+        elif getColor(b[s - 15]) > 0 and not wt:
+            l.append(s - 15)
+    # location 3 (up 1, left 2)     s - 10
+    if (s - 10) >= 0 and x > 1:
+        if b[s - 10] is None:
+            l.append(s - 10)
+        elif getColor(b[s - 10]) < 0 and wt:
+            l.append(s - 10)
+        elif getColor(b[s - 10]) > 0 and not wt:
+            l.append(s - 10)
+    # location 4 (up 1, right 2)    s - 6
+    if (s - 6) >= 0 and x < 6:
+        if b[s - 6] is None:
+            l.append(s - 6)
+        elif getColor(b[s - 6]) < 0 and wt:
+            l.append(s - 6)
+        elif getColor(b[s - 6]) > 0 and not wt:
+            l.append(s - 6)
+    # location 5 (down 1, left 2)   s + 6
+    if (s + 6) <= 63 and x > 1:
+        if b[s + 6] is None:
+            l.append(s + 6)
+        elif getColor(b[s + 6]) < 0 and wt:
+            l.append(s + 6)
+        elif getColor(b[s + 6]) > 0 and not wt:
+            l.append(s + 6)
+    # location 6 (down 1, right 2)  s + 10
+    if (s + 10) <= 63 and x < 6:
+        if b[s + 10] is None:
+            l.append(s + 10)
+        elif getColor(b[s + 10]) < 0 and wt:
+            l.append(s + 10)
+        elif getColor(b[s + 10]) > 0 and not wt:
+            l.append(s + 10)
+    # location 7 (down 2, left 1)   s + 15
+    if (s + 15) <= 63 and x > 0:
+        if b[s + 15] is None:
+            l.append(s + 15)
+        elif getColor(b[s + 15]) < 0 and wt:
+            l.append(s + 15)
+        elif getColor(b[s + 15]) > 0 and not wt:
+            l.append(s + 15)
+    # location 8 (down 2, right 1)  s + 17
+    if (s + 17) <= 63 and x < 7:
+        if b[s + 17] is None:
+            l.append(s + 17)
+        elif getColor(b[s + 17]) < 0 and wt:
+            l.append(s + 17)
+        elif getColor(b[s + 17]) > 0 and not wt:
+            l.append(s + 17)
 
-def rook():
-    
-    return None
+    return l
 
-def queen():
-    
-    return None
+def bishop(b, s , wt):
 
-def king():
-    
-    return None
+    l = []
+    if wt:
+        l.append(s - 8)
+    else:
+        l.append(s + 8)
+
+    return l
+
+def rook(b, s , wt):
+
+    l = []
+    if wt:
+        l.append(s - 8)
+    else:
+        l.append(s + 8)
+
+    return l
+
+def queen(b, s , wt):
+
+    l = []
+    if wt:
+        l.append(s - 8)
+    else:
+        l.append(s + 8)
+
+    return l
+
+def king(b, s , wt):
+
+    l = []
+    if wt:
+        l.append(s - 8)
+    else:
+        l.append(s + 8)
+
+    return l

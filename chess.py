@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from pieces import getLegalMoves
+from pieces import getLegalMoves, getColor
 
 # Sizes
 squareSize = 75
@@ -240,17 +240,6 @@ def getSquare(coordinates):
     #print("X = ", x, ", y = ", y)
     # Convert the square row and column to location in array
     return (y * 8) + x
-
-# Return 0 if place is empty, 1 if piece is white, and -1 if the piece is black
-def getColor(piece):
-    #print(piece)
-    if piece is None:
-        return 0
-    elif piece == "P" or piece == "N" or piece == "B" or piece == "R" or piece == "Q" or piece == "K":
-        return 1
-    
-    return -1
-        
     
 # Set up variables for game
 board = startingBoard
