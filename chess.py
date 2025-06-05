@@ -45,10 +45,15 @@ textRectWhite.center = (squareSize * 10, squareSize * 2)
 textRectBlack = textWhite.get_rect()
 textRectBlack.center = (squareSize * 10, squareSize * 2)
 
+boxWhite2 = pygame.Surface((squareSize * 4 * 0.9, squareSize * 4 * 0.9))
+boxWhite2.fill('black')
 
+boxBlack2 = pygame.Surface((squareSize * 4 * 0.8, squareSize * 4 * 0.8))
+boxBlack2.fill('white')
 
-
-
+textTurn = font.render('Turn 0', True, black, white)
+textRectTurn = textTurn.get_rect()
+textRectTurn.center = (squareSize * 10, squareSize * 6)
 # Setup turn Number display
 
 # Setup images for every piece
@@ -116,8 +121,10 @@ startingBoard.append("R")
 # Draw the board and place pieces from board b
 # Highlight selected square s
 # wt is boolean, if true is white's turn
+# m is list of legal moves
+# t is the turn number
 # Future: show possible squares to move with selected piece
-def drawBoard(b, s, wt):
+def drawBoard(b, s, wt, m, t):
     # Draw the squares
     for i in range(8):
         for j in range(8):
@@ -155,6 +162,11 @@ def drawBoard(b, s, wt):
         # Draw other half
         screen.blit(border1, (squareX, squareY2))
         screen.blit(border2, (squareX2, squareY))
+
+        # Highlight possible moves
+
+
+
     # Display turn
     if wt:
         screen.blit(boxWhite, (squareSize * 8, 0))
@@ -163,6 +175,13 @@ def drawBoard(b, s, wt):
         screen.blit(boxBlack, (squareSize * 8, 0))
         screen.blit(textBlack, textRectBlack)
     # Display turn number
+    screen.blit(boxBlack, (squareSize * 8, squareSize * 4))
+    screen.blit(boxWhite2, (squareSize * 8 + (squareSize * 0.2), squareSize * 4 + (squareSize * 0.2)))
+    screen.blit(boxBlack2, (squareSize * 8 + (squareSize * 0.4), squareSize * 4 + (squareSize * 0.4)))
+
+    turn = 'Turn ' + str(t)
+    textTurn = font.render(turn, True, black, white)
+    screen.blit(textTurn, textRectTurn)
         
 
 
@@ -213,19 +232,34 @@ def getSquare(coordinates):
     # Convert the square row and column to location in array
     return (y * 8) + x
 
+# Return 0 if place is empty, 1 if piece is white, and -1 if the piece is black
+def getColor(piece):
+    #print(piece)
+    if piece is None:
+        return 0
+    elif piece == "P" or piece == "N" or piece == "B" or piece == "R" or piece == "Q" or piece == "K":
+        return 1
+    
+    return -1
         
+# get legal moves for selected piece s on the board b
+def getLegalMoves(b, s):
+
+    return []
     
 # Set up variables for game
 board = startingBoard
 run = True
-whiteTurn = False
+whiteTurn = True
 turnNumber = 0
 #gameRun = True
 selected = None
+isCheck = False
+legalMoves = []
 
 #Main loop for running game
 while run:
-    drawBoard(board, selected, whiteTurn)
+    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber)
     # Running logic
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -234,16 +268,27 @@ while run:
             # Get the position of mouse and convert it to a square
             pos = pygame.mouse.get_pos()
             square = getSquare(pos)
+            # logic for clicking on square with a piece while a piece is not selected
             if selected is None and board[square] is not None:
-                selected = square
+                #print("get Color = ", getColor(board[square]))
+                if getColor(board[square]) > 0 and whiteTurn:
+                    selected = square
+                    legalMoves = getLegalMoves(board, selected)
+                elif getColor(board[square]) < 0 and not whiteTurn:
+                    selected = square
+                    legalMoves = getLegalMoves(board, selected)
+            # logic for clicking on a square while a piece is selected
             elif selected is not None:
+                # Make a move and change turns, need to add logic to check if valid move
                 temp = board[selected]
                 board[selected] = None
                 board[square] = temp
                 selected = None
-            #print("At square ", square, " is the following piece:", board[square])
+                whiteTurn = not whiteTurn
 
-    # Start the game
+                if whiteTurn:
+                    turnNumber += 1
+            #print("At square ", square, " is the following piece:", board[square])
     
 
 
