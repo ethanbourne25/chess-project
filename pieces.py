@@ -55,10 +55,36 @@ def getLegalMoves(b, s):
 def pawn(b, s , wt):
 
     l = []
+
+    y = s // 8
+    # pawn can move forward 2 if it is on starting square, can move forward 1 if not blocked, and can capture diagonally
+
+    # NEED TO ACCOUNT FOR EN PASSANT IN THE FUTURE
+
     if wt:
-        l.append(s - 8)
+        # check for case of being on starting square
+        if y == 6 and b[s - 16] is None and b[s - 8] is None:
+            l.append(s - 16)
+        # now check forward move
+        if y > 0 and b[s - 8] is None:
+            l.append(s - 8)
+        # now check 2 captures
+        if y > 0 and getColor(b[s - 9]) < 0:
+            l.append(s - 9)
+        if y > 0 and getColor(b[s - 7]) < 0:
+            l.append(s - 7)    
     else:
-        l.append(s + 8)
+        # check for case of being on starting square
+        if y == 1 and b[s + 16] is None and b[s + 8] is None:
+            l.append(s + 16)
+        # now check forward move
+        if y < 7 and b[s + 8] is None:
+            l.append(s + 8)
+        # now check 2 captures
+        if y < 7 and getColor(b[s + 9]) > 0:
+            l.append(s + 9)
+        if y < 7 and getColor(b[s + 7]) > 0:
+            l.append(s + 7)    
 
     return l
 
