@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from pieces import Piece, Pawn, Rook, Knight, Bishop, Queen, King
+from pieces import getLegalMoves
 
 # Sizes
 squareSize = 75
@@ -125,6 +125,7 @@ startingBoard.append("R")
 # t is the turn number
 # Future: show possible squares to move with selected piece
 def drawBoard(b, s, wt, m, t):
+    
     # Draw the squares
     for i in range(8):
         for j in range(8):
@@ -143,7 +144,7 @@ def drawBoard(b, s, wt, m, t):
     # Highlight selected square
     # Convert square number to row and column
     if s is not None:
-
+        #print(b)
         #print("Selected square number is ", s)
         x = s % 8
         y = s // 8
@@ -164,7 +165,15 @@ def drawBoard(b, s, wt, m, t):
         screen.blit(border2, (squareX2, squareY))
 
         # Highlight possible moves
+        for possibleMove in m:
+            if board[possibleMove] is None:
+                pygame.draw.circle(screen, 'gray46', (possibleMove % 8 * squareSize + (squareSize * 0.5), possibleMove // 8 * squareSize  + (squareSize * 0.5)), squareSize * 0.2, 0)
+            else:
+                pygame.draw.circle(screen, 'gray46', (possibleMove % 8 * squareSize + (squareSize * 0.5), possibleMove // 8 * squareSize  + (squareSize * 0.5)), squareSize * 0.5, squareSize // 10)
 
+
+        #pygame.draw.circle(screen, 'gray46', (3 * squareSize + (squareSize * 0.5), 3 * squareSize  + (squareSize * 0.5)), squareSize * 0.2, 0)
+        #pygame.draw.circle(screen, 'gray46', (4 * squareSize + (squareSize * 0.5), 3 * squareSize  + (squareSize * 0.5)), squareSize * 0.5, squareSize // 10)
 
 
     # Display turn
@@ -242,10 +251,6 @@ def getColor(piece):
     
     return -1
         
-# get legal moves for selected piece s on the board b
-def getLegalMoves(b, s):
-
-    return []
     
 # Set up variables for game
 board = startingBoard
@@ -268,7 +273,7 @@ while run:
             # Get the position of mouse and convert it to a square
             pos = pygame.mouse.get_pos()
             square = getSquare(pos)
-            # logic for clicking on square with a piece while a piece is not selected
+            # logic for selecting a piece
             if selected is None and board[square] is not None:
                 #print("get Color = ", getColor(board[square]))
                 if getColor(board[square]) > 0 and whiteTurn:
@@ -277,15 +282,15 @@ while run:
                 elif getColor(board[square]) < 0 and not whiteTurn:
                     selected = square
                     legalMoves = getLegalMoves(board, selected)
-            # logic for clicking on a square while a piece is selected
+            # logic for moving a piece
             elif selected is not None:
                 # Make a move and change turns, need to add logic to check if valid move
                 temp = board[selected]
                 board[selected] = None
                 board[square] = temp
                 selected = None
+                # Change whose turn it is and update turn number if necessary
                 whiteTurn = not whiteTurn
-
                 if whiteTurn:
                     turnNumber += 1
             #print("At square ", square, " is the following piece:", board[square])
