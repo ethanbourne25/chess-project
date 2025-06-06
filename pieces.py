@@ -167,10 +167,61 @@ def knight(b, s , wt):
 def bishop(b, s , wt):
 
     l = []
-    if wt:
-        l.append(s - 8)
-    else:
-        l.append(s + 8)
+    # calculate in the 4 diagonal directions until either the edge of the board or a piece is seen
+    # if the piece seen is friendly then not valid square, if piece is opposite then it is a valid square
+    x = s % 8
+    y = s // 8
+    
+    offset = [-9, -7, 7, 9]
+    foundPiece = False
+
+    # up left
+    foundPiece = False
+    temp = s - 9
+    while not foundPiece and temp >= 0 and temp % 8 < x and temp // 8 < y:
+        if b[temp] is None:
+            l.append(temp)
+            temp -= 9
+        else:
+            foundPiece = True
+            if getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+                l.append(temp)
+
+    # up right
+    foundPiece = False
+    temp = s - 7
+    while not foundPiece and temp >= 0 and temp % 8 > x and temp // 8 < y:
+        if b[temp] is None:
+            l.append(temp)
+            temp -= 7
+        else:
+            foundPiece = True
+            if getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+                l.append(temp)
+
+    # down left
+    foundPiece = False
+    temp = s + 7
+    while not foundPiece and temp <= 63 and temp % 8 < x and temp // 8 > y:
+        if b[temp] is None:
+            l.append(temp)
+            temp += 7
+        else:
+            foundPiece = True
+            if getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+                l.append(temp)
+
+    # down right
+    foundPiece = False
+    temp = s + 9
+    while not foundPiece and temp <= 63 and temp % 8 > x and temp // 8 > y:
+        if b[temp] is None:
+            l.append(temp)
+            temp += 9
+        else:
+            foundPiece = True
+            if getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+                l.append(temp)
 
     return l
 
