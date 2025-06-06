@@ -285,6 +285,9 @@ while run:
                         turnNumber += 1
                 elif square is selected:
                     selected = None
+                elif getColor(board[square]) == getColor(board[selected]):
+                    selected = square
+                    legalMoves = getLegalMoves(board, selected)
                 
             #print("At square ", square, " is the following piece:", board[square])
     

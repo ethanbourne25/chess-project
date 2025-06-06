@@ -48,6 +48,7 @@ def getLegalMoves(b, s):
     elif b[s] == 'k':
         l = king(b, s, False)
 
+    # need to check for checks if any of these moves are made and remove them from being playable?
 
     return l
 
@@ -286,21 +287,67 @@ def rook(b, s , wt):
     return l
 
 def queen(b, s , wt):
-
-    l = []
-    if wt:
-        l.append(s - 8)
-    else:
-        l.append(s + 8)
+    # queen is essentially a rook and bishop combined, so need to check 4 diagonals and 4 cardinal directions
+    l1 = bishop(b, s, wt)
+    l2 = rook(b, s, wt)
+    l = l1 + l2
 
     return l
 
 def king(b, s , wt):
 
     l = []
-    if wt:
-        l.append(s - 8)
-    else:
-        l.append(s + 8)
+    x = s % 8
+    y = s // 8
+    # need to check 8 directions
+
+    # up left
+    temp = s - 9
+    if x > 0 and y > 0:
+        if b[temp] is None or getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+            l.append(temp)
+        
+
+    # up
+    temp = s - 8
+    if y > 0:
+        if b[temp] is None or getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+            l.append(temp)
+
+    # up right
+    temp = s - 7
+    if x < 7 and y > 0:
+        if b[temp] is None or getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+            l.append(temp)
+
+    # left
+    temp = s - 1
+    if x > 0:
+        if b[temp] is None or getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+            l.append(temp)
+
+    # right
+    temp = s + 1
+    if x < 7:
+        if b[temp] is None or getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+            l.append(temp)
+
+    # down left
+    temp = s + 7
+    if x > 0 and y < 7:
+        if b[temp] is None or getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+            l.append(temp)
+
+    # down
+    temp = s + 8
+    if y < 7:
+        if b[temp] is None or getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+            l.append(temp)
+        
+    # down right
+    temp = s + 9
+    if x < 7 and y < 7:
+        if b[temp] is None or getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+            l.append(temp)
 
     return l
