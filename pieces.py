@@ -228,10 +228,60 @@ def bishop(b, s , wt):
 def rook(b, s , wt):
 
     l = []
-    if wt:
-        l.append(s - 8)
-    else:
-        l.append(s + 8)
+    x = s % 8
+    y = s // 8
+    # Need to go 4 directions until you hit a piece, and can move at that position if an opposite color to the selected piece
+
+    # up
+    foundPiece = False
+    if y > 0:
+        temp = s - 8
+        while temp >= 0 and not foundPiece:
+            if b[temp] is None:
+                l.append(temp)
+                temp -= 8
+            else:
+                foundPiece = True
+                if getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+                    l.append(temp)
+    
+    # left
+    foundPiece = False
+    if x > 0:
+        temp = s - 1
+        while temp >= 0 and not foundPiece and temp % 8 < x:
+            if b[temp] is None:
+                l.append(temp)
+                temp -= 1
+            else:
+                foundPiece = True
+                if getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+                    l.append(temp)
+    # right
+    foundPiece = False
+    if x < 7:
+        temp = s + 1
+        while temp <= 63 and not foundPiece and temp % 8 > x:
+            if b[temp] is None:
+                l.append(temp)
+                temp += 1
+            else:
+                foundPiece = True
+                if getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+                    l.append(temp)
+    # down
+    foundPiece = False
+    if y < 7:
+        temp = s + 8
+        while temp <= 63 and not foundPiece:
+            if b[temp] is None:
+                l.append(temp)
+                temp += 8
+            else:
+                foundPiece = True
+                if getColor(b[temp]) < 0 and wt or getColor(b[temp]) > 0 and not wt:
+                    l.append(temp)
+
 
     return l
 
