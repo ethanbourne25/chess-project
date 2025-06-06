@@ -274,14 +274,18 @@ while run:
             # logic for moving a piece
             elif selected is not None:
                 # Make a move and change turns, need to add logic to check if valid move
-                temp = board[selected]
-                board[selected] = None
-                board[square] = temp
-                selected = None
-                # Change whose turn it is and update turn number if necessary
-                whiteTurn = not whiteTurn
-                if whiteTurn:
-                    turnNumber += 1
+                if square in legalMoves:
+                    temp = board[selected]
+                    board[selected] = None
+                    board[square] = temp
+                    selected = None
+                    # Change whose turn it is and update turn number if necessary
+                    whiteTurn = not whiteTurn
+                    if whiteTurn:
+                        turnNumber += 1
+                elif square is selected:
+                    selected = None
+                
             #print("At square ", square, " is the following piece:", board[square])
     
 

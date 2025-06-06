@@ -69,9 +69,9 @@ def pawn(b, s , wt):
         if y > 0 and b[s - 8] is None:
             l.append(s - 8)
         # now check 2 captures
-        if y > 0 and getColor(b[s - 9]) < 0:
+        if y > 0 and getColor(b[s - 9]) < 0 and s % 8 > 0:
             l.append(s - 9)
-        if y > 0 and getColor(b[s - 7]) < 0:
+        if y > 0 and getColor(b[s - 7]) < 0 and s % 8 < 7:
             l.append(s - 7)    
     else:
         # check for case of being on starting square
@@ -81,9 +81,9 @@ def pawn(b, s , wt):
         if y < 7 and b[s + 8] is None:
             l.append(s + 8)
         # now check 2 captures
-        if y < 7 and getColor(b[s + 9]) > 0:
+        if y < 7 and getColor(b[s + 9]) > 0 and s % 8 < 7:
             l.append(s + 9)
-        if y < 7 and getColor(b[s + 7]) > 0:
+        if y < 7 and getColor(b[s + 7]) > 0 and s % 8 > 0:
             l.append(s + 7)    
 
     return l
