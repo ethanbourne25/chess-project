@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from pieces import getLegalMoves, getColor, getAttackedSquares
+from pieces import getLegalMoves, getColor, getAttackedSquares, findCheck
 
 # Sizes
 squareSize = 75
@@ -203,6 +203,10 @@ def drawBoard(b, s, wt, m, t, c):
         check = 'Check'
         textCheck = font.render(check, True, black, white)
         screen.blit(textCheck, textRectCheck)
+    else:
+        check = ''
+        textCheck = font.render(check, True, black, white)
+        screen.blit(textCheck, textRectCheck)
 
 
 
@@ -265,7 +269,7 @@ legalMoves = []
 
 #Main loop for running game
 while run:
-    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, True)
+    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, isCheck)
     # Running logic
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -279,10 +283,10 @@ while run:
                 #print("get Color = ", getColor(board[square]))
                 if getColor(board[square]) > 0 and whiteTurn:
                     selected = square
-                    legalMoves = getLegalMoves(board, selected, isCheck)
+                    legalMoves = getLegalMoves(board, selected)
                 elif getColor(board[square]) < 0 and not whiteTurn:
                     selected = square
-                    legalMoves = getLegalMoves(board, selected, isCheck)
+                    legalMoves = getLegalMoves(board, selected)
             # logic for moving a piece
             elif selected is not None:
                 # Make a move and change turns, need to add logic to check if valid move
@@ -291,6 +295,7 @@ while run:
                     board[selected] = None
                     board[square] = temp
                     selected = None
+                    isCheck = findCheck(board, whiteTurn)
                     # Change whose turn it is and update turn number if necessary
                     whiteTurn = not whiteTurn
                     if whiteTurn:

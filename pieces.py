@@ -9,7 +9,7 @@ def getColor(piece):
     return -1
 
 # get legal moves for selected piece s on the board b
-def getLegalMoves(b, s, check):
+def getLegalMoves(b, s):
     
     # get visible moves for your selected piece
     l = getVisibleMoves(b, s)
@@ -38,29 +38,31 @@ def getLegalMoves(b, s, check):
 
     lRemove = []
     # now go through your legal moves
-    for i in range(0, len(l)):
-        #make the move in a fake board state. if in the resulting fake board state your king is attacked, then the move is not legal and should be removed
-        print ('i is ', i, ' of value ', l[i], ' in l: ', l)
-        # Create extra board
-        b2 = b.copy()
-        # Move the piece
-        b2[l[i]] = b2[s]
-        b2[s] = None
+    if s != kW and s != kB:
+        for i in range(0, len(l)):
+            #make the move in a fake board state. if in the resulting fake board state your king is attacked, then the move is not legal and should be removed
+            print ('i is ', i, ' of value ', l[i], ' in l: ', l)
+            # Create extra board
+            b2 = b.copy()
+            # Move the piece
+            b2[l[i]] = b2[s]
+            b2[s] = None
 
-        # Go through the pieces of the opposite color
-        for s2 in range(0, 64):
-            # You cannot move if resulting move ends in your king attacked, this essentially adds pins
-            # if black piece and its whites move
-            if getColor(b2[s2]) < 0 and wt:
-                l2 = getVisibleMoves(b2, s2)
-                #print('l2 is ', l2, ' for s2 of ', s2)
-                if kW in l2:
-                    lRemove.append(l[i])
-            # if white piece and its blacks move
-            elif getColor(b2[s2]) > 0 and not wt:
-                l2 = getVisibleMoves(b2, s2)
-                if kB in l2:
-                    lRemove.append(l[i])
+            # Go through the pieces of the opposite color
+            for s2 in range(0, 64):
+                # You cannot move if resulting move ends in your king attacked, this essentially adds pins
+                # if black piece and its whites move
+                if getColor(b2[s2]) < 0 and wt:
+                    l2 = getVisibleMoves(b2, s2)
+                    #print('l2 is ', l2, ' for s2 of ', s2)
+                    if kW in l2:
+                        lRemove.append(l[i])
+                # if white piece and its blacks move
+                elif getColor(b2[s2]) > 0 and not wt:
+                    l2 = getVisibleMoves(b2, s2)
+                    if kB in l2:
+                        lRemove.append(l[i])
+
                     
 
 
@@ -163,7 +165,27 @@ def getAttackedSquares(b, wt):
 
     return l
             
+def findCheck(b, wt):
+    l = getAttackedSquares(b, wt)
+    # get king location for your color pieces
+    kW = None
+    kB = None
 
+    loc = 0
+    for pos in b:
+        if pos == 'K':
+            kW = loc
+            break
+        elif pos == 'k':
+            kB = loc
+        loc += 1
+        if kW is not None and kB is not None:
+            break
+    
+    if kB in l and wt or kW in l and not wt:
+        return True
+    
+    return False
 
 
 def pawn(b, s , wt):
