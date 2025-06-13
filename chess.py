@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from pieces import getLegalMoves, getColor
+from pieces import getLegalMoves, getColor, getAttackedSquares
 
 # Sizes
 squareSize = 75
@@ -51,10 +51,15 @@ boxWhite2.fill('black')
 boxBlack2 = pygame.Surface((squareSize * 4 * 0.8, squareSize * 4 * 0.8))
 boxBlack2.fill('white')
 
+# Setup turn Number display
 textTurn = font.render('Turn 0', True, black, white)
 textRectTurn = textTurn.get_rect()
-textRectTurn.center = (squareSize * 10, squareSize * 6)
-# Setup turn Number display
+textRectTurn.center = (squareSize * 10, squareSize * 5)
+# Setup check display
+textCheck = font.render('Check', True, black, white)
+textRectCheck = textCheck.get_rect()
+textRectCheck.center = (squareSize * 10, squareSize * 6)
+
 
 # Setup images for every piece
 whitePawn = pygame.image.load('./pieces/pawn_white.png').convert_alpha()
@@ -123,8 +128,9 @@ startingBoard.append("R")
 # wt is boolean, if true is white's turn
 # m is list of legal moves
 # t is the turn number
+# c is boolean, if true it is check
 # Future: show possible squares to move with selected piece
-def drawBoard(b, s, wt, m, t):
+def drawBoard(b, s, wt, m, t, c):
     
     # Draw the squares
     for i in range(8):
@@ -182,7 +188,8 @@ def drawBoard(b, s, wt, m, t):
         screen.blit(textWhite, textRectWhite)
     else:
         screen.blit(boxBlack, (squareSize * 8, 0))
-        screen.blit(textBlack, textRectBlack)
+        screen.blit(textBlack, textRectBlack)\
+    
     # Display turn number
     screen.blit(boxBlack, (squareSize * 8, squareSize * 4))
     screen.blit(boxWhite2, (squareSize * 8 + (squareSize * 0.2), squareSize * 4 + (squareSize * 0.2)))
@@ -191,7 +198,12 @@ def drawBoard(b, s, wt, m, t):
     turn = 'Turn ' + str(t)
     textTurn = font.render(turn, True, black, white)
     screen.blit(textTurn, textRectTurn)
-        
+    
+    if c:
+        check = 'Check'
+        textCheck = font.render(check, True, black, white)
+        screen.blit(textCheck, textRectCheck)
+
 
 
 # Place the pieces for any position using list representation of the position, b
@@ -253,7 +265,7 @@ legalMoves = []
 
 #Main loop for running game
 while run:
-    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber)
+    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, True)
     # Running logic
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -267,10 +279,10 @@ while run:
                 #print("get Color = ", getColor(board[square]))
                 if getColor(board[square]) > 0 and whiteTurn:
                     selected = square
-                    legalMoves = getLegalMoves(board, selected)
+                    legalMoves = getLegalMoves(board, selected, isCheck)
                 elif getColor(board[square]) < 0 and not whiteTurn:
                     selected = square
-                    legalMoves = getLegalMoves(board, selected)
+                    legalMoves = getLegalMoves(board, selected, isCheck)
             # logic for moving a piece
             elif selected is not None:
                 # Make a move and change turns, need to add logic to check if valid move
