@@ -62,13 +62,15 @@ def getLegalMoves(b, s):
                     l2 = getVisibleMoves(b2, s2)
                     if kB in l2:
                         lRemove.append(l[i])
+    else:
+        b2 = b.copy()
+        b2[s] = None
 
-                    
-
-
-    
-
-            
+        if wt:
+            lRemove = getAttackedSquares(b2, wt)
+        else:
+            lRemove = getAttackedSquares(b2, not wt)
+        
     
     print('List of visible moves is: ', l)
     print('List of moves to be removed is: ', lRemove)
@@ -117,6 +119,8 @@ def getVisibleMoves(b, s):
     return l
 
 # return a list of all attacked squares by one color on the board
+# b is the board
+# wt is true if finding attacked squares for white, false if finding attacked squares for black
 def getAttackedSquares(b, wt):
     l = []
     for i in range(0, len(b)):
