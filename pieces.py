@@ -8,6 +8,17 @@ def getColor(piece):
     
     return -1
 
+# get all moves for wt (true if white, false if black) on the board b
+def getAllMoves(b, wt):
+    l = []
+    for i in range(64):
+        if getColor(b[i]) > 0 and wt:
+            l.extend(getLegalMoves(b, i))
+        elif getColor(b[i]) < 0 and not wt:
+            l.extend(getLegalMoves(b, i))
+    print ('list of all legal moves: ', l)      
+    return l
+
 # get legal moves for selected piece s on the board b
 def getLegalMoves(b, s):
     
@@ -77,6 +88,7 @@ def getLegalMoves(b, s):
 
     return list(set(l) - set(lRemove))
 
+# get the visible moves for selected piece s on the board b
 def getVisibleMoves(b, s):
     l = []
     # white pawn
@@ -168,7 +180,8 @@ def getAttackedSquares(b, wt):
                 l = list(set(l).union(set(l2)))
 
     return l
-            
+
+# see if wt (true if white, false if black) is in check on the board b            
 def findCheck(b, wt):
     l = getAttackedSquares(b, wt)
     # get king location for your color pieces
@@ -191,7 +204,7 @@ def findCheck(b, wt):
     
     return False
 
-
+# return all moves for pawn on selected square s for wt (true if white, false if black) on board b
 def pawn(b, s , wt):
 
     l = []
@@ -228,6 +241,7 @@ def pawn(b, s , wt):
 
     return l
 
+# return all the visible squares for knight on square s
 def knightVisible(s):
     l = []
     # for knight need to check 8 locations to see if they are on the board
@@ -261,7 +275,7 @@ def knightVisible(s):
         l.append(s + 17)
 
     return l
-
+# return all moves for knight on selected square s for wt (true if white, false if black) on board b
 def knight(b, s , wt):
 
     l = knightVisible(s)
@@ -273,7 +287,7 @@ def knight(b, s , wt):
 
     return list(set(l) - set(lRemove))
 
-
+# return all the visible squares for bishop on square s
 def bishopVisible(b, s):
     l = []
     # calculate in the 4 diagonal directions until either the edge of the board or a piece is seen
@@ -329,7 +343,7 @@ def bishopVisible(b, s):
             l.append(temp)
 
     return l
-
+# return all moves for bishop on selected square s for wt (true if white, false if black) on board b
 def bishop(b, s , wt):
     l = bishopVisible(b, s)
     lRemove = []
@@ -340,9 +354,7 @@ def bishop(b, s , wt):
 
     return list(set(l) - set(lRemove))
 
-
-    
-
+# return all the visible squares for rook on square s
 def rookVisible(b, s):
     l = []
     x = s % 8
@@ -396,8 +408,7 @@ def rookVisible(b, s):
                 l.append(temp)
     
     return l
-
-
+# return all moves for rook on selected square s for wt (true if white, false if black) on board b
 def rook(b, s , wt):
 
     l = rookVisible(b, s)
@@ -409,11 +420,12 @@ def rook(b, s , wt):
 
     return list(set(l) - set(lRemove))
 
+# return all the visible squares for queen on square s
 def queenVisible(b, s):
     l1 = rookVisible(b, s)
     l2 = bishopVisible(b, s)
     return l1 + l2
-
+# return all moves for queen on selected square s for wt (true if white, false if black) on board b
 def queen(b, s , wt):
     # queen is essentially a rook and bishop combined, so need to check 4 diagonals and 4 cardinal directions
     l = queenVisible(b, s)
@@ -425,6 +437,7 @@ def queen(b, s , wt):
 
     return list(set(l) - set(lRemove))
 
+# return all the visible squares for king on square s
 def kingVisible(s):
     l = []
     x = s % 8
@@ -471,7 +484,7 @@ def kingVisible(s):
         l.append(temp)
     
     return l
-
+# return all moves for king on selected square s for wt (true if white, false if black) on board b
 def king(b, s , wt):
 
     l = kingVisible(s)

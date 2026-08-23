@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from pieces import getLegalMoves, getColor, getAttackedSquares, findCheck
+from pieces import getLegalMoves, getColor, getAttackedSquares, findCheck, getAllMoves
 
 # Sizes
 squareSize = 75
@@ -59,7 +59,10 @@ textRectTurn.center = (squareSize * 10, squareSize * 5)
 textCheck = font.render('Check', True, black, white)
 textRectCheck = textCheck.get_rect()
 textRectCheck.center = (squareSize * 10, squareSize * 6)
-
+#Setup checkmate display
+textCheck2 = font.render('Checkmate', True, black, white)
+textRectCheck2 = textCheck2.get_rect()
+textRectCheck2.center = (squareSize * 10, squareSize * 6)
 
 # Setup images for every piece
 whitePawn = pygame.image.load('./pieces/pawn_white.png').convert_alpha()
@@ -129,7 +132,6 @@ startingBoard.append("R")
 # m is list of legal moves
 # t is the turn number
 # c is boolean, if true it is check
-# Future: show possible squares to move with selected piece
 def drawBoard(b, s, wt, m, t, c):
     
     # Draw the squares
@@ -147,6 +149,10 @@ def drawBoard(b, s, wt, m, t, c):
                     screen.blit(l, (i * squareSize, j * squareSize))
     # Place the pieces
     placePieces(b)
+
+    # Check for checkmate conditions
+    allMoves = getAllMoves(b, wt)
+
     # Highlight selected square
     # Convert square number to row and column
     if s is not None:
@@ -200,11 +206,17 @@ def drawBoard(b, s, wt, m, t, c):
     screen.blit(textTurn, textRectTurn)
     
     if c:
-        check = 'Check'
-        textCheck = font.render(check, True, black, white)
-        screen.blit(textCheck, textRectCheck)
+        if not allMoves:
+            check2 = 'Checkmate'
+            textCheck2 = font.render(check2, True, black, white)
+            screen.blit(textCheck2, textRectCheck2)
+        else:
+            check = 'Check'
+            textCheck = font.render(check, True, black, white)
+            screen.blit(textCheck, textRectCheck)
     else:
         check = ''
+        check2 = ''
         textCheck = font.render(check, True, black, white)
         screen.blit(textCheck, textRectCheck)
 
@@ -256,7 +268,7 @@ def getSquare(coordinates):
     #print("X = ", x, ", y = ", y)
     # Convert the square row and column to location in array
     return (y * 8) + x
-    
+
 # Set up variables for game
 board = startingBoard
 run = True
