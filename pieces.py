@@ -33,11 +33,11 @@ def getLegalMoves(b, s):
     for pos in b:
         if pos == 'K':
             kW = loc
-            break
         elif pos == 'k':
             kB = loc
         loc += 1
         if kW is not None and kB is not None:
+            print ('did this break')
             break
 
     if getColor(b[s]) > 0:
@@ -76,11 +76,8 @@ def getLegalMoves(b, s):
     else:
         b2 = b.copy()
         b2[s] = None
-
-        if wt:
-            lRemove = getAttackedSquares(b2, wt)
-        else:
-            lRemove = getAttackedSquares(b2, not wt)
+        lRemove = getAttackedSquares(b2, not wt)
+    
         
     
     print('List of visible moves is: ', l)
