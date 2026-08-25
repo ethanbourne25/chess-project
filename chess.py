@@ -129,10 +129,12 @@ startingBoard.append("R")
 # Draw the board and place pieces from board b
 # Highlight selected square s
 # wt is boolean, if true is white's turn
-# m is list of legal moves
+# m is list of legal moves for selected square s
 # t is the turn number
 # c is boolean, if true it is check
-def drawBoard(b, s, wt, m, t, c):
+# cm is boolean, if true it is checkmate
+# r is winner, if -1 than black wins, 1 if white wins, 0 if draw, and none if game is still continuing
+def drawBoard(b, s, wt, m, t, c, cm, r):
     
     # Draw the squares
     for i in range(8):
@@ -151,7 +153,7 @@ def drawBoard(b, s, wt, m, t, c):
     placePieces(b)
 
     # Check for checkmate conditions
-    allMoves = getAllMoves(b, wt)
+    #allMoves = getAllMoves(b, wt)
 
     # Highlight selected square
     # Convert square number to row and column
@@ -204,9 +206,10 @@ def drawBoard(b, s, wt, m, t, c):
     turn = 'Turn ' + str(t)
     textTurn = font.render(turn, True, black, white)
     screen.blit(textTurn, textRectTurn)
-    
+
+    # Display if it is check or checkmate
     if c:
-        if not allMoves:
+        if cm:
             check2 = 'Checkmate'
             textCheck2 = font.render(check2, True, black, white)
             screen.blit(textCheck2, textRectCheck2)
@@ -219,6 +222,15 @@ def drawBoard(b, s, wt, m, t, c):
         check2 = ''
         textCheck = font.render(check, True, black, white)
         screen.blit(textCheck, textRectCheck)
+
+    # Display winner if there is a winner
+    if r is not None:
+        print("Winner is: ", r)
+
+    # Display draw offer button (tbd)
+    # Display resignation button (tbd)
+    # Display end game button (tbd)
+    # Display timer (tbd)
 
 
 
@@ -274,16 +286,30 @@ board = startingBoard
 run = True
 whiteTurn = True
 turnNumber = 0
-#gameRun = True
+fiftyTurnCounter = 0
+enPassantPawn = -1
+
+whiteShortCastle = True
+whiteLongCastle = True
+blackShortCastle = True
+blackLongCastle = True
+
 selected = None
 isCheck = False
+isMate = False
+winner = None
+isGameValid = True
 legalMoves = []
 
 #Main loop for running game
 while run:
-    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, isCheck)
+
+    # Either display home screen or game screen
+    # Currently only display game screen with drawBoard
+    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, isCheck, isMate, winner)
     # Running logic
     for event in pygame.event.get():
+        # Quit application when you x out
         if event.type == pygame.QUIT:
             run = False
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -291,7 +317,7 @@ while run:
             pos = pygame.mouse.get_pos()
             square = getSquare(pos)
             # logic for selecting a piece
-            if selected is None and board[square] is not None:
+            if selected is None and board[square] is not None and isGameValid:
                 #print("get Color = ", getColor(board[square]))
                 if getColor(board[square]) > 0 and whiteTurn:
                     selected = square
@@ -303,20 +329,40 @@ while run:
             elif selected is not None:
                 # Make a move and change turns, need to add logic to check if valid move
                 if square in legalMoves:
+                    # Move the selected piece to its new square
                     temp = board[selected]
                     board[selected] = None
                     board[square] = temp
                     selected = None
+                    # Pawn promotion case (TBD)
+                    
+                    # Does the move allow for en passant?
+
+                    # See if there is a check
                     isCheck = findCheck(board, whiteTurn)
+
+                    # See if game should end by checkmate or stalemate
+
+                    # See if game ends by threefold repetition (TBD)
+
                     # Change whose turn it is and update turn number if necessary
+                    # NEED TO TRACK 50 TURN RULE (TBD)
                     whiteTurn = not whiteTurn
                     if whiteTurn:
                         turnNumber += 1
+                    # Timer logic (TBD)
+
                 elif square is selected:
                     selected = None
                 elif getColor(board[square]) == getColor(board[selected]):
                     selected = square
                     legalMoves = getLegalMoves(board, selected)
+
+                # end of moving piece logic
+            
+            # logic of resigning (TBD)
+            # logic of draw offer (TBD)
+            # logic of end game (TBD)
                 
             #print("At square ", square, " is the following piece:", board[square])
     
