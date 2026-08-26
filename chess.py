@@ -8,7 +8,7 @@ borderSize = squareSize // 12
 
 # Setup screen
 pygame.init()
-screen = pygame.display.set_mode((squareSize * 12, squareSize * 8))
+screen = pygame.display.set_mode((squareSize * 16, squareSize * 8))
 pygame.display.set_caption('Chess')
 
 # Setup Squares
@@ -51,6 +51,24 @@ boxWhite2.fill('black')
 boxBlack2 = pygame.Surface((squareSize * 4 * 0.8, squareSize * 4 * 0.8))
 boxBlack2.fill('white')
 
+# background boxes for options on right
+boxOptionLight = pygame.Surface((squareSize * 4, squareSize * 8 / 3))
+boxOptionLight.fill('burlywood1')
+boxOptionDark = pygame.Surface((squareSize * 4, squareSize * 8 / 3))
+boxOptionDark.fill('chocolate4')
+# frame boxes for buttons on right
+boxFrameLight = pygame.Surface((squareSize * 4 * 0.9, squareSize * 8 / 3 * 0.9))
+boxFrameLight.fill('burlywood1')
+boxFrameDark = pygame.Surface((squareSize * 4 * 0.9, squareSize * 8 / 3 * 0.9))
+boxFrameDark.fill('chocolate4')
+# button boxes on fight
+boxButtonLight = pygame.Rect(squareSize * 12 + (squareSize * 0.4), (squareSize * 0.3), squareSize * 4 * 0.8, squareSize * 8 / 3 * 0.8)
+#boxButtonLight.fill('burlywood1')
+boxButtonDark = pygame.Rect(squareSize * 12 + (squareSize * 0.4), squareSize * 8 / 3 + (squareSize * 0.3), squareSize * 4 * 0.8, squareSize * 8 / 3 * 0.8)
+#boxButtonDark.fill('chocolate4')
+boxButtonLight2 = pygame.Rect(squareSize * 12 + (squareSize * 0.4), squareSize * 8 / 3 * 2 + (squareSize * 0.3), squareSize * 4 * 0.8, squareSize * 8 / 3 * 0.8)
+#boxButtonLight2.fill('burlywood1')
+
 # Setup turn Number display
 textTurn = font.render('Turn 0', True, black, white)
 textRectTurn = textTurn.get_rect()
@@ -63,6 +81,19 @@ textRectCheck.center = (squareSize * 10, squareSize * 6)
 textCheck2 = font.render('Checkmate', True, black, white)
 textRectCheck2 = textCheck2.get_rect()
 textRectCheck2.center = (squareSize * 10, squareSize * 6)
+
+# Setup text for draw, resign, and end game
+textTie = font.render('Offer Draw', True, black)
+textRectTie = textTie.get_rect()
+textRectTie.center = (squareSize * 14, squareSize / 6 * 8)
+
+textResign = font.render('Resign', True, black)
+textRectResign = textResign.get_rect()
+textRectResign.center = (squareSize * 14, squareSize * 4)
+
+textEnd = font.render('End Game', True, black)
+textRectEnd = textEnd.get_rect()
+textRectEnd.center = (squareSize * 14, squareSize / 6 * 40)
 
 # Setup images for every piece
 whitePawn = pygame.image.load('./pieces/pawn_white.png').convert_alpha()
@@ -227,9 +258,51 @@ def drawBoard(b, s, wt, m, t, c, cm, r):
     if r is not None:
         print("Winner is: ", r)
 
+    #print(pygame.mouse.get_pos())
+    
     # Display draw offer button (tbd)
+    screen.blit(boxOptionLight, (squareSize * 12, 0))
+    screen.blit(boxFrameDark, (squareSize * 12 + (squareSize * 0.2), (squareSize * 0.15)))
+    current_color = None
+    if boxButtonLight.collidepoint(pygame.mouse.get_pos()):
+        current_color = 'burlywood1'
+        pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+    else:
+        current_color = 'chocolate4'
+        #pygame.mouse.set_cursor(*pygame.cursors.arrow)
+    pygame.draw.rect(screen, current_color, boxButtonLight)
+    screen.blit(textTie, textRectTie)
+
     # Display resignation button (tbd)
+
+    screen.blit(boxOptionDark, (squareSize * 12, squareSize * 8 / 3))
+    screen.blit(boxFrameLight, (squareSize * 12 + (squareSize * 0.2), squareSize * 8 / 3 + (squareSize * 0.15)))
+    current_color2 = None
+    if boxButtonDark.collidepoint(pygame.mouse.get_pos()):
+        current_color2 = 'chocolate4'
+        pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+    else:
+        current_color2 = 'burlywood1'
+        #pygame.mouse.set_cursor(*pygame.cursors.arrow)
+    pygame.draw.rect(screen, current_color2, boxButtonDark)
+
+    screen.blit(textResign, textRectResign)
+
     # Display end game button (tbd)
+
+    screen.blit(boxOptionLight, (squareSize * 12, squareSize * 8 / 3 * 2))
+    screen.blit(boxFrameDark, (squareSize * 12 + (squareSize * 0.2), squareSize * 8 / 3 * 2 + (squareSize * 0.15)))
+    #screen.blit(boxButtonLight, (squareSize * 12 + (squareSize * 0.4), squareSize * 8 / 3 * 2 + (squareSize * 0.3)))
+    current_color3 = None
+    if boxButtonLight2.collidepoint(pygame.mouse.get_pos()):
+        current_color3 = 'burlywood1'
+        pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+    else:
+        current_color3 = 'chocolate4'
+        #pygame.mouse.set_cursor(*pygame.cursors.arrow)
+    pygame.draw.rect(screen, current_color3, boxButtonLight2)
+
+    screen.blit(textEnd, textRectEnd)
     # Display timer (tbd)
 
 
@@ -300,6 +373,8 @@ isMate = False
 winner = None
 isGameValid = True
 legalMoves = []
+
+pygame.mouse.set_cursor(*pygame.cursors.arrow)
 
 #Main loop for running game
 while run:
