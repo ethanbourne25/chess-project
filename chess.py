@@ -69,6 +69,11 @@ boxButtonDark = pygame.Rect(squareSize * 12 + (squareSize * 0.4), squareSize * 8
 boxButtonLight2 = pygame.Rect(squareSize * 12 + (squareSize * 0.4), squareSize * 8 / 3 * 2 + (squareSize * 0.3), squareSize * 4 * 0.8, squareSize * 8 / 3 * 0.8)
 #boxButtonLight2.fill('burlywood1')
 
+# draw offer popup
+boxDrawOffer = pygame.Rect(squareSize * 4, squareSize * 2, squareSize * 8, squareSize * 4)
+
+
+
 # Setup turn Number display
 textTurn = font.render('Turn 0', True, black, white)
 textRectTurn = textTurn.get_rect()
@@ -165,7 +170,9 @@ startingBoard.append("R")
 # c is boolean, if true it is check
 # cm is boolean, if true it is checkmate
 # r is winner, if -1 than black wins, 1 if white wins, 0 if draw, and none if game is still continuing
-def drawBoard(b, s, wt, m, t, c, cm, r):
+# p is boolean, if true than there is a pawn that needs to be promoted
+# dOffer is boolean, if true a draw was offered and needs to be accepted or rejected
+def drawBoard(b, s, wt, m, t, c, cm, r, p, dOffer):
     
     # Draw the squares
     for i in range(8):
@@ -303,6 +310,13 @@ def drawBoard(b, s, wt, m, t, c, cm, r):
     pygame.draw.rect(screen, current_color3, boxButtonLight2)
 
     screen.blit(textEnd, textRectEnd)
+
+    # Draw offer popup
+    if dOffer:
+        pygame.draw.rect(screen, 'red', boxDrawOffer)
+
+    # Promotion popup
+
     # Display timer (tbd)
 
 
@@ -367,6 +381,9 @@ whiteLongCastle = True
 blackShortCastle = True
 blackLongCastle = True
 
+promotion = False
+drawOffered = False
+
 selected = None
 isCheck = False
 isMate = False
@@ -381,65 +398,83 @@ while run:
 
     # Either display home screen or game screen
     # Currently only display game screen with drawBoard
-    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, isCheck, isMate, winner)
+    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, isCheck, isMate, winner, promotion, drawOffered)
     # Running logic
     for event in pygame.event.get():
         # Quit application when you x out
         if event.type == pygame.QUIT:
             run = False
         elif event.type == pygame.MOUSEBUTTONUP:
-            # Get the position of mouse and convert it to a square
-            pos = pygame.mouse.get_pos()
-            square = getSquare(pos)
-            # logic for selecting a piece
-            if selected is None and board[square] is not None and isGameValid:
-                #print("get Color = ", getColor(board[square]))
-                if getColor(board[square]) > 0 and whiteTurn:
-                    selected = square
-                    legalMoves = getLegalMoves(board, selected)
-                elif getColor(board[square]) < 0 and not whiteTurn:
-                    selected = square
-                    legalMoves = getLegalMoves(board, selected)
-            # logic for moving a piece
-            elif selected is not None:
-                # Make a move and change turns, need to add logic to check if valid move
-                if square in legalMoves:
-                    # Move the selected piece to its new square
-                    temp = board[selected]
-                    board[selected] = None
-                    board[square] = temp
-                    selected = None
-                    # Pawn promotion case (TBD)
-                    
-                    # Does the move allow for en passant?
 
-                    # See if there is a check
-                    isCheck = findCheck(board, whiteTurn)
+            # need a loop based on if home screen or game screen (tbd)
 
-                    # See if game should end by checkmate or stalemate
+            # game screen loop, has to handle cases where either draw is offered or piece is promoted
+            if not drawOffered and not promotion:
+                # Get the position of mouse and convert it to a square
+                pos = pygame.mouse.get_pos()
+                square = getSquare(pos)
+                # logic for selecting a piece
+                if pos[0] <= 600:
+                    if selected is None and board[square] is not None and isGameValid:
+                        #print("get Color = ", getColor(board[square]))
+                        if getColor(board[square]) > 0 and whiteTurn:
+                            selected = square
+                            legalMoves = getLegalMoves(board, selected)
+                        elif getColor(board[square]) < 0 and not whiteTurn:
+                            selected = square
+                            legalMoves = getLegalMoves(board, selected)
+                    # logic for moving a piece
+                    elif selected is not None:
+                        # Make a move and change turns, need to add logic to check if valid move
+                        if square in legalMoves:
+                            # Move the selected piece to its new square
+                            temp = board[selected]
+                            board[selected] = None
+                            board[square] = temp
+                            selected = None
+                            # Pawn promotion case (TBD)
+                            
+                            # Does the move allow for en passant?
 
-                    # See if game ends by threefold repetition (TBD)
+                            # See if there is a check
+                            isCheck = findCheck(board, whiteTurn)
 
-                    # Change whose turn it is and update turn number if necessary
-                    # NEED TO TRACK 50 TURN RULE (TBD)
-                    whiteTurn = not whiteTurn
-                    if whiteTurn:
-                        turnNumber += 1
-                    # Timer logic (TBD)
+                            # See if game should end by checkmate or stalemate
 
-                elif square is selected:
-                    selected = None
-                elif getColor(board[square]) == getColor(board[selected]):
-                    selected = square
-                    legalMoves = getLegalMoves(board, selected)
+                            # See if game ends by threefold repetition (TBD)
 
-                # end of moving piece logic
-            
-            # logic of resigning (TBD)
-            # logic of draw offer (TBD)
-            # logic of end game (TBD)
-                
-            #print("At square ", square, " is the following piece:", board[square])
+                            # Change whose turn it is and update turn number if necessary
+                            # NEED TO TRACK 50 TURN RULE (TBD)
+                            whiteTurn = not whiteTurn
+                            if whiteTurn:
+                                turnNumber += 1
+                            # Timer logic (TBD)
+
+                        elif square is selected:
+                            selected = None
+                        elif getColor(board[square]) == getColor(board[selected]):
+                            selected = square
+                            legalMoves = getLegalMoves(board, selected)
+
+                        # end of moving piece logic
+                # logic of draw offer (TBD)
+                if (boxButtonLight.collidepoint(pygame.mouse.get_pos())):
+                    print('Offer draw')
+                    drawOffered = True
+                # logic of resigning (TBD)
+                if (boxButtonDark.collidepoint(pygame.mouse.get_pos())):
+                    print('Resign')
+                # logic of end game (TBD)
+                if (boxButtonLight2.collidepoint(pygame.mouse.get_pos())):
+                    print('End Game')
+
+            elif drawOffered:
+                print("You made it")
+                if (boxDrawOffer.collidepoint(pygame.mouse.get_pos())):
+                    drawOffered = False
+            elif promotion:
+                print("Promotion")
+                #print("At square ", square, " is the following piece:", board[square])
     
 
 
