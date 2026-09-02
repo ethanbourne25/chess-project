@@ -72,7 +72,8 @@ boxButtonLight2 = pygame.Rect(squareSize * 12 + (squareSize * 0.4), squareSize *
 # draw offer popup
 boxDrawOffer = pygame.Rect(squareSize * 4, squareSize * 2, squareSize * 8, squareSize * 4)
 
-
+# promotion popup
+boxPromotion = pygame.Rect(squareSize * 4, squareSize * 2, squareSize * 3, squareSize * 1)
 
 # Setup turn Number display
 textTurn = font.render('Turn 0', True, black, white)
@@ -316,6 +317,20 @@ def drawBoard(b, s, wt, m, t, c, cm, r, p, dOffer):
         pygame.draw.rect(screen, 'red', boxDrawOffer)
 
     # Promotion popup
+    if promotion:
+        #boxPromotion = pygame.Rect(squareSize * 4, squareSize * 2, squareSize * 3, squareSize * 1)
+        pygame.draw.rect(screen, 'white', boxPromotion)
+        if wt:
+            screen.blit(blackQueen, (squareSize * 4, squareSize * 2))
+            screen.blit(blackRook, (squareSize * 5, squareSize * 2))
+            screen.blit(blackKnight, (squareSize * 6, squareSize * 2))
+        else:
+            screen.blit(whiteQueen, (squareSize * 4, squareSize * 2))
+            screen.blit(whiteRook, (squareSize * 5, squareSize * 2))
+            screen.blit(whiteKnight, (squareSize * 6, squareSize * 2))
+
+
+        
 
     # Display timer (tbd)
 
@@ -369,7 +384,7 @@ def getSquare(coordinates):
     return (y * 8) + x
 
 # Set up variables for game
-board = startingBoard
+board = startingBoard.copy()
 run = True
 whiteTurn = True
 turnNumber = 0
@@ -464,9 +479,29 @@ while run:
                 # logic of resigning (TBD)
                 if (boxButtonDark.collidepoint(pygame.mouse.get_pos())):
                     print('Resign')
+                    promotion = True
                 # logic of end game (TBD)
                 if (boxButtonLight2.collidepoint(pygame.mouse.get_pos())):
                     print('End Game')
+                    # For the moment this resets the game to starting conditions
+                    board = startingBoard.copy()
+                    run = True
+                    whiteTurn = True
+                    turnNumber = 0
+                    fiftyTurnCounter = 0
+                    enPassantPawn = -1
+                    whiteShortCastle = True
+                    whiteLongCastle = True
+                    blackShortCastle = True
+                    blackLongCastle = True
+                    promotion = False
+                    drawOffered = False
+                    selected = None
+                    isCheck = False
+                    isMate = False
+                    winner = None
+                    isGameValid = True
+
 
             elif drawOffered:
                 print("You made it")
@@ -474,6 +509,8 @@ while run:
                     drawOffered = False
             elif promotion:
                 print("Promotion")
+                if (boxPromotion.collidepoint(pygame.mouse.get_pos())):
+                    promotion = False
                 #print("At square ", square, " is the following piece:", board[square])
     
 
