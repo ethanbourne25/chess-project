@@ -88,6 +88,11 @@ textCheck2 = font.render('Checkmate', True, black, white)
 textRectCheck2 = textCheck2.get_rect()
 textRectCheck2.center = (squareSize * 10, squareSize * 6)
 
+#Setup text for displaying who won
+textWin = font.render('Draw', True, black, white)
+textRectWin = textWin.get_rect()
+textRectWin.center = (squareSize * 10, squareSize * 7)
+
 # Setup text for draw, resign, and end game
 textTie = font.render('Offer Draw', True, black)
 textRectTie = textTie.get_rect()
@@ -264,7 +269,24 @@ def drawBoard(b, s, wt, m, t, c, cm, r, p, dOffer):
 
     # Display winner if there is a winner
     if r is not None:
-        print("Winner is: ", r)
+        #print("Winner is: ", r)
+
+        if r == 0:
+            #print("tie")
+            whoWon = 'Draw'
+        elif r == 1:
+            #print('white wins')
+            whoWon = 'White Wins!'
+        else:
+            #print('black wins')
+            whoWon = 'Black Wins!'
+
+        textWin = font.render(whoWon, True, black, white)
+        textRectWin = textWin.get_rect()
+        textRectWin.center = (squareSize * 10, squareSize * 7)
+        screen.blit(textWin, textRectWin)
+    
+    
 
     #print(pygame.mouse.get_pos())
     
@@ -428,8 +450,9 @@ while run:
                 # Get the position of mouse and convert it to a square
                 pos = pygame.mouse.get_pos()
                 square = getSquare(pos)
-                # logic for selecting a piece
-                if pos[0] <= 600:
+                # logic for clicking on the board
+                if pos[0] <= 600 and isGameValid:
+                    # logic for selecting a piece
                     if selected is None and board[square] is not None and isGameValid:
                         #print("get Color = ", getColor(board[square]))
                         if getColor(board[square]) > 0 and whiteTurn:
@@ -440,21 +463,36 @@ while run:
                             legalMoves = getLegalMoves(board, selected)
                     # logic for moving a piece
                     elif selected is not None:
-                        # Make a move and change turns, need to add logic to check if valid move
+                        # Make a move if clicked square is legal
                         if square in legalMoves:
                             # Move the selected piece to its new square
+
+
                             temp = board[selected]
                             board[selected] = None
                             board[square] = temp
                             selected = None
                             # Pawn promotion case (TBD)
-                            
+                            if temp =='P' or temp == 'p':
+                                print(' moving pawn?')
                             # Does the move allow for en passant?
 
                             # See if there is a check
                             isCheck = findCheck(board, whiteTurn)
 
                             # See if game should end by checkmate or stalemate
+                            # get all moves for piece of opposite color
+                            allMoves = getAllMoves(board, not whiteTurn)
+                            if not allMoves:
+                                if not isCheck:
+                                    winner = 0
+                                elif whiteTurn:
+                                    winner = 1
+                                    isMate = True
+                                else:
+                                    winner = -1
+                                    isMate = True
+                                isGameValid = False
 
                             # See if game ends by threefold repetition (TBD)
 
@@ -464,20 +502,21 @@ while run:
                             if whiteTurn:
                                 turnNumber += 1
                             # Timer logic (TBD)
-
+                        # if you click on the selected piece again then deselect the piece
                         elif square is selected:
                             selected = None
+                        # if you click on another piece then select that piece instead
                         elif getColor(board[square]) == getColor(board[selected]):
                             selected = square
                             legalMoves = getLegalMoves(board, selected)
 
                         # end of moving piece logic
                 # logic of draw offer (TBD)
-                if (boxButtonLight.collidepoint(pygame.mouse.get_pos())):
+                if (boxButtonLight.collidepoint(pygame.mouse.get_pos())) and isGameValid:
                     print('Offer draw')
                     drawOffered = True
                 # logic of resigning (TBD)
-                if (boxButtonDark.collidepoint(pygame.mouse.get_pos())):
+                if (boxButtonDark.collidepoint(pygame.mouse.get_pos())) and isGameValid:
                     print('Resign')
                     promotion = True
                 # logic of end game (TBD)
