@@ -73,7 +73,8 @@ boxButtonLight2 = pygame.Rect(squareSize * 12 + (squareSize * 0.4), squareSize *
 boxDrawOffer = pygame.Rect(squareSize * 4, squareSize * 2, squareSize * 8, squareSize * 4)
 
 # promotion popup
-boxPromotion = pygame.Rect(squareSize * 4, squareSize * 2, squareSize * 3, squareSize * 1)
+#boxPromotion = pygame.Rect
+boxPromotion = pygame.Rect(0, 0, squareSize * 3, squareSize * 1)
 
 # Setup turn Number display
 textTurn = font.render('Turn 0', True, black, white)
@@ -178,7 +179,8 @@ startingBoard.append("R")
 # r is winner, if -1 than black wins, 1 if white wins, 0 if draw, and none if game is still continuing
 # p is boolean, if true than there is a pawn that needs to be promoted
 # dOffer is boolean, if true a draw was offered and needs to be accepted or rejected
-def drawBoard(b, s, wt, m, t, c, cm, r, p, dOffer):
+# ps is square of pawn being promoted
+def drawBoard(b, s, wt, m, t, c, cm, r, p, dOffer, ps):
     
     # Draw the squares
     for i in range(8):
@@ -339,17 +341,23 @@ def drawBoard(b, s, wt, m, t, c, cm, r, p, dOffer):
         pygame.draw.rect(screen, 'red', boxDrawOffer)
 
     # Promotion popup
-    if promotion:
+    if p:
         #boxPromotion = pygame.Rect(squareSize * 4, squareSize * 2, squareSize * 3, squareSize * 1)
+        
+        px = ps % 8
+        py = ps // 8
+
+        boxPromotion = pygame.Rect(squareSize * px, squareSize * py, squareSize * 3, squareSize * 1)
+        #print('boxPromotion x = ', boxPromotion.x, ' boxPromotion y = ', boxPromotion.y)
         pygame.draw.rect(screen, 'white', boxPromotion)
         if wt:
-            screen.blit(blackQueen, (squareSize * 4, squareSize * 2))
-            screen.blit(blackRook, (squareSize * 5, squareSize * 2))
-            screen.blit(blackKnight, (squareSize * 6, squareSize * 2))
+            screen.blit(blackQueen, (squareSize * px, squareSize * py))
+            screen.blit(blackRook, (squareSize * (px + 1), squareSize * py))
+            screen.blit(blackKnight, (squareSize * (px + 2), squareSize * py))
         else:
-            screen.blit(whiteQueen, (squareSize * 4, squareSize * 2))
-            screen.blit(whiteRook, (squareSize * 5, squareSize * 2))
-            screen.blit(whiteKnight, (squareSize * 6, squareSize * 2))
+            screen.blit(whiteQueen, (squareSize * px, squareSize * py))
+            screen.blit(whiteRook, (squareSize * (px + 1), squareSize * py))
+            screen.blit(whiteKnight, (squareSize * (px + 2), squareSize * py))
 
 
         
@@ -419,6 +427,7 @@ blackShortCastle = True
 blackLongCastle = True
 
 promotion = False
+promotionSquare = None
 drawOffered = False
 
 selected = None
@@ -435,7 +444,7 @@ while run:
 
     # Either display home screen or game screen
     # Currently only display game screen with drawBoard
-    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, isCheck, isMate, winner, promotion, drawOffered)
+    drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, isCheck, isMate, winner, promotion, drawOffered, promotionSquare)
     # Running logic
     for event in pygame.event.get():
         # Quit application when you x out
@@ -472,9 +481,16 @@ while run:
                             board[selected] = None
                             board[square] = temp
                             selected = None
+
+
                             # Pawn promotion case (TBD)
-                            if temp =='P' or temp == 'p':
-                                print(' moving pawn?')
+                            # if white pawn makes it to 8th rank, or black pawn makes it to 1st rank
+                            print('temp is: ', temp)
+                            print('square is: ', square) 
+                            if temp is 'p' and square > 55 or temp is 'P' and square < 8:
+                                print('Reached promotion')
+                                promotion = True
+                                promotionSquare = square
                             # Does the move allow for en passant?
 
                             # See if there is a check
@@ -534,6 +550,7 @@ while run:
                     blackShortCastle = True
                     blackLongCastle = True
                     promotion = False
+                    promotionSquare = None
                     drawOffered = False
                     selected = None
                     isCheck = False
@@ -548,8 +565,32 @@ while run:
                     drawOffered = False
             elif promotion:
                 print("Promotion")
+
+                px = promotionSquare % 8
+                py = promotionSquare // 8
+                boxPromotion = pygame.Rect(squareSize * px, squareSize * py, squareSize * 3, squareSize * 1)
                 if (boxPromotion.collidepoint(pygame.mouse.get_pos())):
+                    print('promotionSquare is: ', promotionSquare)
+                    clickedX = pygame.mouse.get_pos()[0] // squareSize
+                    print('px is: ', px, ', while clicked x is: ', clickedX, 'is white: ', whiteTurn)
+
+                    if not whiteTurn:
+                        if clickedX == px:
+                            board[promotionSquare] = 'Q'
+                        elif clickedX == px + 1:
+                            board[promotionSquare] = 'R'
+                        else:
+                            board[promotionSquare] = 'N'
+                    else:
+                        if clickedX == px:
+                            board[promotionSquare] = 'q'
+                        elif clickedX == px + 1:
+                            board[promotionSquare] = 'r'
+                        else:
+                            board[promotionSquare] = 'n'
+                    
                     promotion = False
+                    promotionSquare = None
                 #print("At square ", square, " is the following piece:", board[square])
     
 

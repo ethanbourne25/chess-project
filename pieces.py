@@ -16,7 +16,7 @@ def getAllMoves(b, wt):
             l.extend(getLegalMoves(b, i))
         elif getColor(b[i]) < 0 and not wt:
             l.extend(getLegalMoves(b, i))
-    print ('list of all legal moves: ', l)      
+    #print ('list of all legal moves: ', l)      
     return l
 
 # get legal moves for selected piece s on the board b
@@ -37,7 +37,7 @@ def getLegalMoves(b, s):
             kB = loc
         loc += 1
         if kW is not None and kB is not None:
-            print ('did this break')
+            #print ('did this break')
             break
 
     if getColor(b[s]) > 0:
@@ -45,14 +45,14 @@ def getLegalMoves(b, s):
     else:
         wt = False
 
-    print("white king location is ", kW,' black king loc is ', kB, ' and color is white is ', wt)
+    #print("white king location is ", kW,' black king loc is ', kB, ' and color is white is ', wt)
 
     lRemove = []
     # now go through your legal moves
     if s != kW and s != kB:
         for i in range(0, len(l)):
             #make the move in a fake board state. if in the resulting fake board state your king is attacked, then the move is not legal and should be removed
-            print ('i is ', i, ' of value ', l[i], ' in l: ', l)
+            #print ('i is ', i, ' of value ', l[i], ' in l: ', l)
             # Create extra board
             b2 = b.copy()
             # Move the piece
@@ -80,8 +80,8 @@ def getLegalMoves(b, s):
     
         
     
-    print('List of visible moves is: ', l)
-    print('List of moves to be removed is: ', lRemove)
+    #print('List of visible moves is: ', l)
+    #print('List of moves to be removed is: ', lRemove)
 
     return list(set(l) - set(lRemove))
 
