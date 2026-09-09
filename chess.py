@@ -534,7 +534,11 @@ while run:
                 # logic of resigning (TBD)
                 if (boxButtonDark.collidepoint(pygame.mouse.get_pos())) and isGameValid:
                     print('Resign')
-                    promotion = True
+                    isGameValid = False
+                    if whiteTurn:
+                        winner = -1
+                    else:
+                        winner = 1
                 # logic of end game (TBD)
                 if (boxButtonLight2.collidepoint(pygame.mouse.get_pos())):
                     print('End Game')

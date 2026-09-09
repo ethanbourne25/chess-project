@@ -210,7 +210,7 @@ def pawn(b, s , wt):
     # pawn can move forward 2 if it is on starting square, can move forward 1 if not blocked, and can capture diagonally
 
     # NEED TO ACCOUNT FOR EN PASSANT IN THE FUTURE
-
+    #print('for ', wt, ' pawn y is ', y)
     if wt:
         # check for case of being on starting square
         if y == 6 and b[s - 16] is None and b[s - 8] is None:
@@ -227,15 +227,19 @@ def pawn(b, s , wt):
         # check for case of being on starting square
         if y == 1 and b[s + 16] is None and b[s + 8] is None:
             l.append(s + 16)
-        # now check forward move
+        # forward move
         if y < 7 and b[s + 8] is None:
             l.append(s + 8)
-        # now check 2 captures
-        if y < 7 and getColor(b[s + 9]) > 0 and s % 8 < 7:
-            l.append(s + 9)
+        # first capture
         if y < 7 and getColor(b[s + 7]) > 0 and s % 8 > 0:
-            l.append(s + 7)    
-
+            l.append(s + 7)
+        # check case for pawn being on h7
+        if s == 55:
+            print('special case reached')
+        # else check for second capture
+        elif y < 7 and getColor(b[s + 9]) > 0 and s % 8 < 7:
+            l.append(s + 9)
+    
     return l
 
 # return all the visible squares for knight on square s
