@@ -151,6 +151,47 @@ boxSelectBlack  = pygame.Rect(squareSize * 6, squareSize * 4, squareSize * 2, sq
 boxStartGame  = pygame.Rect(squareSize * 4, squareSize * 6, squareSize * 3.5, squareSize * 1.5)
 boxStartGameBorder = pygame.Rect(squareSize * 4, squareSize * 6, squareSize * 3.5, squareSize * 1.5)
 
+# text for home screen buttons
+textOnePlayer = font3.render('1 Player', True, black, None)
+textRectOnePlayer = textOnePlayer.get_rect()
+textRectOnePlayer.center = boxPlayer.center
+
+textTwoPlayer = font3.render('2 Players', True, black, None)
+textRectTwoPlayer = textTwoPlayer.get_rect()
+textRectTwoPlayer.center = boxPlayer2.center
+
+textTimer1 = font3.render('1 min', True, black, None)
+textRectTimer1 = textTimer1.get_rect()
+textRectTimer1.center = boxTimer1.center
+
+textTimer3 = font3.render('3 min', True, black, None)
+textRectTimer3 = textTimer3.get_rect()
+textRectTimer3.center = boxTimer3.center
+
+textTimer5 = font3.render('5 min', True, black, None)
+textRectTimer5 = textTimer5.get_rect()
+textRectTimer5.center = boxTimer5.center
+
+textTimer10 = font3.render('10 min', True, black, None)
+textRectTimer10 = textTimer10.get_rect()
+textRectTimer10.center = boxTimer10.center
+
+textTimer0 = font3.render('None', True, black, None)
+textRectTimer0 = textTimer0.get_rect()
+textRectTimer0.center = boxTimer0.center
+
+textSelectWhite = font3.render('White', True, black, None)
+textRectSelectWhite = textSelectWhite.get_rect()
+textRectSelectWhite.center = boxSelectWhite.center
+
+textSelectBlack = font3.render('Black', True, black, None)
+textRectSelectBlack = textSelectBlack.get_rect()
+textRectSelectBlack.center = boxSelectBlack.center
+
+textStartGame = font3.render('Start Game', True, black, None)
+textRectStartGame = textStartGame.get_rect()
+textRectStartGame.center = boxStartGame.center
+
 # Setup images for every piece
 whitePawn = pygame.image.load('./pieces/pawn_white.png').convert_alpha()
 whitePawn = pygame.transform.scale(whitePawn, (squareSize, squareSize))
@@ -419,24 +460,73 @@ def drawHome(n, t, wt):
     # draw titles
     screen.blit(textPlayer, textRectPlayer)
     screen.blit(textTimerTitle, textRectTimerTitle)
-    if numPlayers == 2:
+    if numPlayers == 1:
         screen.blit(textSelectColor, textRectSelectColor)
-    #print('hi')
-    # draw buttons
-    pygame.draw.rect(screen, 'gray', boxPlayer, 0, squareSize // 10)
-    pygame.draw.rect(screen, 'white', boxPlayer2, 0, squareSize // 10)
+    # draw select player buttons
+    if numPlayers == 1:
+        pygame.draw.rect(screen, 'green', boxPlayer, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxPlayer2, 0, squareSize // 10)
+    else:
+        pygame.draw.rect(screen, 'gray', boxPlayer, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'green', boxPlayer2, 0, squareSize // 10)
+    # text for selecting player
+    screen.blit(textOnePlayer, textRectOnePlayer)
+    screen.blit(textTwoPlayer, textRectTwoPlayer)
+    # draw timer buttons
+    if t == 1:
+        pygame.draw.rect(screen, 'gray', boxTimer0, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'green', boxTimer1, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer3, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer5, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer10, 0, squareSize // 10)
+    elif t == 3:
+        pygame.draw.rect(screen, 'gray', boxTimer0, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer1, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'green', boxTimer3, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer5, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer10, 0, squareSize // 10)
+    elif t == 5:
+        pygame.draw.rect(screen, 'gray', boxTimer0, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer1, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer3, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'green', boxTimer5, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer10, 0, squareSize // 10)
+    elif t == 10:
+        pygame.draw.rect(screen, 'gray', boxTimer0, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer1, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer3, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer5, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'green', boxTimer10, 0, squareSize // 10)
+    else:
+        pygame.draw.rect(screen, 'green', boxTimer0, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer1, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer3, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer5, 0, squareSize // 10)
+        pygame.draw.rect(screen, 'gray', boxTimer10, 0, squareSize // 10)
 
-    pygame.draw.rect(screen, 'red', boxTimer0, 0, squareSize // 10)
-    pygame.draw.rect(screen, 'blue', boxTimer1, 0, squareSize // 10)
-    pygame.draw.rect(screen, 'orange', boxTimer3, 0, squareSize // 10)
-    pygame.draw.rect(screen, 'green', boxTimer5, 0, squareSize // 10)
-    pygame.draw.rect(screen, 'yellow', boxTimer10, 0, squareSize // 10)
+    # text for timers
+    screen.blit(textTimer1, textRectTimer1)
+    screen.blit(textTimer3, textRectTimer3)
+    screen.blit(textTimer5, textRectTimer5)
+    screen.blit(textTimer10, textRectTimer10)
+    screen.blit(textTimer0, textRectTimer0)
 
-    pygame.draw.rect(screen, 'purple', boxSelectWhite, 0, squareSize // 10)
-    pygame.draw.rect(screen, 'pink', boxSelectBlack, 0, squareSize // 10)
+    # select color
+    if n == 1:
+
+        if wt:
+            pygame.draw.rect(screen, 'green', boxSelectWhite, 0, squareSize // 10)
+            pygame.draw.rect(screen, 'gray', boxSelectBlack, 0, squareSize // 10)
+        else:
+            pygame.draw.rect(screen, 'gray', boxSelectWhite, 0, squareSize // 10)
+            pygame.draw.rect(screen, 'green', boxSelectBlack, 0, squareSize // 10)
+
+        screen.blit(textSelectWhite, textRectSelectWhite)
+        screen.blit(textSelectBlack, textRectSelectBlack)
 
     pygame.draw.rect(screen, 'chocolate4', boxStartGame, 0, squareSize // 10)
     pygame.draw.rect(screen, 'burlywood1', boxStartGameBorder, squareSize // 8, squareSize // 10)
+    screen.blit(textStartGame, textRectStartGame)
 
 
 # Place the pieces for any position using list representation of the position, b
@@ -682,7 +772,35 @@ while run:
                     #print("At square ", square, " is the following piece:", board[square])
             # Mouse event for home screen
             else:
-                playing = True
+                # Handle clicking every single button
+                # Start Button
+                if (boxStartGame.collidepoint(pygame.mouse.get_pos())):
+                    playing = True
+                # 1 player
+                elif (boxPlayer.collidepoint(pygame.mouse.get_pos())):
+                    numPlayers = 1
+                # 2 player
+                elif (boxPlayer2.collidepoint(pygame.mouse.get_pos())):
+                    numPlayers = 2
+                # Timer 1 min
+                elif (boxTimer1.collidepoint(pygame.mouse.get_pos())):
+                    timerLength = 1
+                # Timer 3 min
+                elif (boxTimer3.collidepoint(pygame.mouse.get_pos())):
+                    timerLength = 3
+                # Timer 5 min
+                elif (boxTimer5.collidepoint(pygame.mouse.get_pos())):
+                    timerLength = 5
+                # Timer 10 min
+                elif (boxTimer10.collidepoint(pygame.mouse.get_pos())):
+                    timerLength = 10
+                # Timer None
+                elif (boxTimer0.collidepoint(pygame.mouse.get_pos())):
+                    timerLength = 0
+                elif (boxSelectWhite.collidepoint(pygame.mouse.get_pos())) and numPlayers == 1:
+                    selectColor = True
+                elif (boxSelectBlack.collidepoint(pygame.mouse.get_pos())) and numPlayers == 1:
+                    selectColor = False
                 #print(pygame.font.get_fonts())
     
 
