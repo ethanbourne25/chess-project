@@ -1,4 +1,4 @@
-import pygame
+import pygame, time
 from sys import exit
 from pieces import getLegalMoves, getColor, getAttackedSquares, findCheck, getAllMoves
 
@@ -32,6 +32,7 @@ black = (0, 0, 0)
 font = pygame.font.SysFont('mvboli',  30)
 font2 = pygame.font.SysFont('impact', 90)
 font3 = pygame.font.SysFont('impact', 30)
+font4 = pygame.font.SysFont('mvboli', 30)
 # create a text surface object,
 # on which text is drawn on it.
 textWhite = font.render('White Turn', True, white, black)
@@ -109,6 +110,11 @@ textEnd = font.render('End Game', True, black)
 textRectEnd = textEnd.get_rect()
 textRectEnd.center = (squareSize * 14, squareSize / 6 * 40)
 
+boxWhiteTimer  = pygame.Rect(squareSize * 8.5, squareSize * 1.5, squareSize * 3, squareSize * 1)
+boxWhiteTimerBorder = pygame.Rect(squareSize * 8.5, squareSize * 1.5, squareSize * 3, squareSize * 1)
+boxBlackTimer  = pygame.Rect(squareSize * 8.5, squareSize * 2.75, squareSize * 3, squareSize * 1)
+boxBlackTimerBorder = pygame.Rect(squareSize * 8.5, squareSize * 2.75, squareSize * 3, squareSize * 1)
+# ---------------------------------- HOME SCREEN ----------------------------------------
 # Chess title
 textChess = font2.render('Chess', True, white, black)
 textRectChess = textChess.get_rect()
@@ -265,7 +271,8 @@ startingBoard.append("R")
 # p is boolean, if true than there is a pawn that needs to be promoted
 # dOffer is boolean, if true a draw was offered and needs to be accepted or rejected
 # ps is square of pawn being promoted
-def drawBoard(b, s, wt, m, t, c, cm, r, p, dOffer, ps):
+# tl is the timer length for the game
+def drawBoard(b, s, wt, m, t, c, cm, r, p, dOffer, ps, tl):
     
     # Draw the squares
     for i in range(8):
@@ -447,7 +454,13 @@ def drawBoard(b, s, wt, m, t, c, cm, r, p, dOffer, ps):
 
         
 
-    # Display timer (tbd)
+    # Display timer boxes
+    if tl != 0:
+        pygame.draw.rect(screen, 'white', boxWhiteTimer)
+        pygame.draw.rect(screen, 'gray', boxWhiteTimerBorder, squareSize // 10, 0)
+
+        pygame.draw.rect(screen, 'black', boxBlackTimer)
+        pygame.draw.rect(screen, 'gray', boxBlackTimerBorder, squareSize // 10, 0)
 
 # Draw the home screen
 # n is number of players
@@ -605,6 +618,11 @@ numPlayers = 2
 timerLength = 0
 selectColor = True
 
+startTime = 0
+endTime = 0
+whiteTimer = 0
+blackTimer = 0
+
 pygame.mouse.set_cursor(*pygame.cursors.arrow)
 
 #Main loop for running game
@@ -613,9 +631,29 @@ while run:
     # Either display home screen or game screen
     # Currently only display game screen with drawBoard
     if playing:
-        drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, isCheck, isMate, winner, promotion, drawOffered, promotionSquare)
+        drawBoard(board, selected, whiteTurn, legalMoves, turnNumber, isCheck, isMate, winner, promotion, drawOffered, promotionSquare, timerLength)
+        # run timer with updated values
+        if timerLength != 0:
+            if whiteTurn:
+                #print('Hi')
+                textWhiteTimer = font4.render('0:00', True, black, None)
+                textBlackTimer = font4.render('0:00', True, white, None)
+            else:
+                textBlackTimer = font4.render('0:00', True, white, None)
+                textWhiteTimer = font4.render('0:00', True, black, None)
+
+            textRectWhiteTimer = textWhiteTimer.get_rect()
+            textRectWhiteTimer.center = boxWhiteTimer.center
+            textRectBlackTimer = textBlackTimer.get_rect()
+            textRectBlackTimer.center = boxBlackTimer.center
+
+            screen.blit(textWhiteTimer, textRectWhiteTimer)
+            screen.blit(textBlackTimer, textRectBlackTimer)
+
     else:
         drawHome(numPlayers, timerLength, selectColor)
+        
+
     # Running logic
     for event in pygame.event.get():
         # Quit application when you x out
@@ -658,7 +696,7 @@ while run:
                                 # if white pawn makes it to 8th rank, or black pawn makes it to 1st rank
                                 print('temp is: ', temp)
                                 print('square is: ', square) 
-                                if temp is 'p' and square > 55 or temp is 'P' and square < 8:
+                                if temp == 'p' and square > 55 or temp == 'P' and square < 8:
                                     print('Reached promotion')
                                     promotion = True
                                     promotionSquare = square
@@ -785,9 +823,14 @@ while run:
                 # Timer 1 min
                 elif (boxTimer1.collidepoint(pygame.mouse.get_pos())):
                     timerLength = 1
+                    startTime = time.perf_counter()
+                    print('Start time is: ', startTime)
                 # Timer 3 min
                 elif (boxTimer3.collidepoint(pygame.mouse.get_pos())):
                     timerLength = 3
+                    endTime = time.perf_counter() - startTime
+                    print('Time difference: ', endTime)
+                    print('Min = ', endTime // 60, ', Seconds = ', endTime % 60, ', Milliseconds = ', endTime - int(endTime))
                 # Timer 5 min
                 elif (boxTimer5.collidepoint(pygame.mouse.get_pos())):
                     timerLength = 5
